@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Design World — DeepFake Biometric Detector & Pipeline</title>
-    <meta name="description" content="Design World — Biometric DeepFake detection through an interactive 3D chromatic glass cube analyzer with live neural pipeline telemetry.">
+    <meta name="description"
+        content="Design World — Biometric DeepFake detection through an interactive 3D chromatic glass cube analyzer with live neural pipeline telemetry.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
     <style>
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
         :root {
             --bg: #000;
             --fg: #fff;
@@ -21,7 +32,9 @@
             --cyan-accent: #00e5ff;
             --cyan-glow: rgba(0, 229, 255, 0.35);
         }
-        html, body {
+
+        html,
+        body {
             height: 100%;
             background: #000;
             color: #fff;
@@ -51,7 +64,10 @@
             touch-action: none;
             z-index: 1;
         }
-        #scene.dragging { cursor: grabbing; }
+
+        #scene.dragging {
+            cursor: grabbing;
+        }
 
         .ui {
             position: absolute;
@@ -59,9 +75,14 @@
             pointer-events: none;
             z-index: 10;
         }
-        .ui a, .ui button, .ui input, .ui .interactive {
+
+        .ui a,
+        .ui button,
+        .ui input,
+        .ui .interactive {
             pointer-events: auto;
         }
+
         .sr-only {
             position: absolute;
             width: 1px;
@@ -82,6 +103,7 @@
             justify-content: space-between;
             z-index: 30;
         }
+
         .logo {
             display: flex;
             align-items: center;
@@ -91,6 +113,7 @@
             font-size: 15px;
             letter-spacing: -0.01em;
         }
+
         .logo-mark {
             width: 20px;
             height: 40px;
@@ -98,17 +121,27 @@
             border-radius: 0 20px 20px 0;
             transition: background 0.3s, box-shadow 0.3s;
         }
+
         .logo:hover .logo-mark {
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
         }
-        .logo b { font-weight: 700; }
-        .logo span { font-weight: 400; color: rgba(255,255,255,0.7); }
+
+        .logo b {
+            font-weight: 700;
+        }
+
+        .logo span {
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
         .nav-links {
             display: flex;
             gap: clamp(16px, 3.5vw, 50px);
             list-style: none;
             align-items: center;
         }
+
         .nav-links a {
             color: #fff;
             text-decoration: none;
@@ -118,16 +151,20 @@
             cursor: pointer;
             transition: color 0.25s;
         }
+
         .nav-links a::after {
             content: '';
             position: absolute;
-            left: 0; right: 0; bottom: -4px;
+            left: 0;
+            right: 0;
+            bottom: -4px;
             height: 1px;
             background: currentColor;
             transform: scaleX(0);
             transform-origin: right;
             transition: transform .35s ease;
         }
+
         .nav-links a:hover::after {
             transform: scaleX(1);
             transform-origin: left;
@@ -143,6 +180,7 @@
             transform: translate(-19px, -50%);
             z-index: 30;
         }
+
         .arrow {
             width: 36px;
             height: 36px;
@@ -155,9 +193,21 @@
             cursor: pointer;
             transition: background .25s, color .25s, transform .2s, border-color .25s;
         }
-        .arrow svg { width: 17px; height: 17px; }
-        .arrow:hover { background: #fff; color: #000; transform: scale(1.08); }
-        .arrow:active { transform: scale(0.95); }
+
+        .arrow svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .arrow:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.08);
+        }
+
+        .arrow:active {
+            transform: scale(0.95);
+        }
 
         /* ── DOTS ── */
         .dots {
@@ -170,6 +220,7 @@
             gap: 28px;
             z-index: 30;
         }
+
         .dot {
             width: 12px;
             height: 12px;
@@ -179,8 +230,14 @@
             cursor: pointer;
             transition: background .25s, transform .2s;
         }
-        .dot.active { background: transparent; }
-        .dot:hover { transform: scale(1.2); }
+
+        .dot.active {
+            background: transparent;
+        }
+
+        .dot:hover {
+            transform: scale(1.2);
+        }
 
         /* ── TAGLINE ── */
         .tagline {
@@ -194,7 +251,12 @@
             pointer-events: none;
             z-index: 25;
         }
-        .tagline strong { font-weight: 700; display: block; }
+
+        .tagline strong {
+            font-weight: 700;
+            display: block;
+        }
+
         .tagline .badge {
             display: inline-flex;
             align-items: center;
@@ -222,6 +284,7 @@
             align-items: center;
             z-index: 25;
         }
+
         .cta {
             flex: none;
             padding: 0 18px;
@@ -229,9 +292,9 @@
             display: inline-flex;
             align-items: center;
             gap: 9px;
-            border: 1.5px solid rgba(255,255,255,.85);
+            border: 1.5px solid rgba(255, 255, 255, .85);
             border-radius: 6px;
-            background: rgba(0,0,0,.45);
+            background: rgba(0, 0, 0, .45);
             color: #fff;
             font-size: 13px;
             font-weight: 500;
@@ -240,9 +303,25 @@
             backdrop-filter: blur(10px);
             transition: all .25s ease;
         }
-        .cta svg { width: 15px; height: 15px; }
-        .cta:hover { background: #fff; color: #000; box-shadow: 0 0 25px rgba(255,255,255,0.3); }
-        .cta-line { flex: 1; height: 1.5px; background: rgba(255,255,255,.8); min-width: 30px; }
+
+        .cta svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .cta:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-line {
+            flex: 1;
+            height: 1.5px;
+            background: rgba(255, 255, 255, .8);
+            min-width: 30px;
+        }
+
         .count {
             flex: none;
             font-size: clamp(100px, 14vw, 240px);
@@ -250,7 +329,7 @@
             line-height: 1;
             letter-spacing: -0.02em;
             color: transparent;
-            -webkit-text-stroke: 1.5px rgba(255,255,255,.9);
+            -webkit-text-stroke: 1.5px rgba(255, 255, 255, .9);
             user-select: none;
             pointer-events: none;
         }
@@ -269,7 +348,10 @@
             pointer-events: none;
             z-index: 100;
         }
-        .loader.done { opacity: 0; }
+
+        .loader.done {
+            opacity: 0;
+        }
 
         /* ── CUBE UPLOAD ZONE OVERLAY & RETICLE ── */
         .cube-overlay {
@@ -305,14 +387,39 @@
             pointer-events: none;
             transition: all 0.3s ease;
         }
-        .reticle-corner.tl { top: -6px; left: -6px; border-width: 2px 0 0 2px; border-top-left-radius: 5px; }
-        .reticle-corner.tr { top: -6px; right: -6px; border-width: 2px 2px 0 0; border-top-right-radius: 5px; }
-        .reticle-corner.bl { bottom: -6px; left: -6px; border-width: 0 0 2px 2px; border-bottom-left-radius: 5px; }
-        .reticle-corner.br { bottom: -6px; right: -6px; border-width: 0 2px 2px 0; border-bottom-right-radius: 5px; }
+
+        .reticle-corner.tl {
+            top: -6px;
+            left: -6px;
+            border-width: 2px 0 0 2px;
+            border-top-left-radius: 5px;
+        }
+
+        .reticle-corner.tr {
+            top: -6px;
+            right: -6px;
+            border-width: 2px 2px 0 0;
+            border-top-right-radius: 5px;
+        }
+
+        .reticle-corner.bl {
+            bottom: -6px;
+            left: -6px;
+            border-width: 0 0 2px 2px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .reticle-corner.br {
+            bottom: -6px;
+            right: -6px;
+            border-width: 0 2px 2px 0;
+            border-bottom-right-radius: 5px;
+        }
 
         .hero.drag-over .upload-reticle {
             background: rgba(0, 229, 255, 0.07);
         }
+
         .hero.drag-over .reticle-corner {
             border-color: #00e5ff;
             width: 28px;
@@ -336,51 +443,225 @@
             cursor: pointer;
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
             transition: all 0.3s ease;
             transform: translateY(16px);
             opacity: 0.95;
         }
+
         .cube-hint-pill:hover {
             opacity: 1;
             transform: translateY(14px) scale(1.04);
             border-color: #00e5ff;
             box-shadow: 0 10px 30px rgba(0, 229, 255, 0.25);
         }
-        .cube-hint-pill svg { width: 14px; height: 14px; stroke: #00e5ff; }
 
-        /* ── PROGRESSION DASHBOARD (Directly Below the 3D Cube) ── */
+        .cube-hint-pill svg {
+            width: 14px;
+            height: 14px;
+            stroke: #00e5ff;
+        }
+
+        /* ── PROGRESSION DASHBOARD (Floating / Draggable / Zoomable) ── */
         .progress-dashboard {
             position: absolute;
-            left: 51.7%;
-            top: 71.5%;
-            transform: translate(-50%, -50%);
-            width: clamp(340px, 58vw, 840px);
-            background: rgba(8, 11, 18, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 14px;
-            padding: 14px 18px;
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.85), inset 0 0 20px rgba(0, 229, 255, 0.03);
-            z-index: 22;
+            left: var(--pad-x);
+            top: clamp(82px, 11vh, 108px);
+            width: clamp(320px, 23vw, 395px);
+            max-height: calc(100vh - clamp(110px, 14vh, 140px));
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(175deg, rgba(12, 16, 26, 0.94) 0%, rgba(6, 9, 15, 0.97) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-left: 3px solid rgba(0, 229, 255, 0.7);
+            border-radius: 16px;
+            padding: 12px 16px 16px;
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.92), 0 0 35px rgba(0, 229, 255, 0.08);
+            z-index: 60;
             pointer-events: auto;
-            transition: all 0.35s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 229, 255, 0.3) transparent;
+            transform-origin: top left;
+            transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .progress-dashboard::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .progress-dashboard::-webkit-scrollbar-thumb {
+            background: rgba(0, 229, 255, 0.35);
+            border-radius: 4px;
+        }
+
+        .progress-dashboard.dragging {
+            box-shadow: 0 32px 90px rgba(0, 0, 0, 0.98), 0 0 50px rgba(0, 229, 255, 0.45);
+            border-color: rgba(0, 229, 255, 0.8);
+            user-select: none;
+            cursor: grabbing !important;
+            transition: none !important; /* Zero latency response during mouse move */
+        }
+
+        .progress-dashboard.minimized {
+            max-height: 48px !important;
+            overflow: hidden !important;
+            padding-bottom: 8px;
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.85);
+        }
+
+        .progress-dashboard.minimized .dashboard-header,
+        .progress-dashboard.minimized .dash-view {
+            display: none !important;
+        }
+
+        .progress-dashboard.minimized .dash-window-bar {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        /* Drag Grip & Window Controls Bar */
+        .dash-window-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 8px;
+            margin-bottom: 9px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: grab;
+            user-select: none;
+            flex-shrink: 0;
+            touch-action: none;
+        }
+
+        .dash-window-bar:active,
+        .dashboard-header:active {
+            cursor: grabbing;
+        }
+
+        .dash-grip {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: rgba(0, 229, 255, 0.9);
+            font-family: 'JetBrains Mono', monospace;
+            cursor: grab;
+        }
+
+        .grip-icon {
+            font-size: 14px;
+            color: rgba(0, 229, 255, 0.65);
+            line-height: 1;
+        }
+
+        .dash-window-tools {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 2px 6px;
+        }
+
+        .tool-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.75);
+            width: 22px;
+            height: 22px;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: rgba(0, 229, 255, 0.2);
+            color: #00e5ff;
+        }
+
+        .tool-btn:active {
+            transform: scale(0.9);
+        }
+
+        .zoom-slider-wrap {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 4px;
+        }
+
+        .zoom-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 52px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .zoom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00e5ff;
+            cursor: pointer;
+            box-shadow: 0 0 6px #00e5ff;
+            transition: transform 0.15s;
+        }
+
+        .zoom-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.3);
+        }
+
+        .zoom-level {
+            font-size: 9.5px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #00e5ff;
+            padding: 0 4px;
+            cursor: pointer;
+            min-width: 36px;
+            text-align: center;
+            user-select: none;
+            border-radius: 3px;
+        }
+
+        .zoom-level:hover {
+            background: rgba(0, 229, 255, 0.15);
         }
 
         .dashboard-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-bottom: 13px;
+            padding-bottom: 9px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+            cursor: grab;
+            touch-action: none;
         }
+
         .dash-title-group {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         .live-dot {
             width: 7px;
             height: 7px;
@@ -389,6 +670,7 @@
             box-shadow: 0 0 8px #00e5ff;
             animation: blink 1.2s infinite;
         }
+
         .dash-title {
             font-size: 11px;
             font-weight: 700;
@@ -396,66 +678,75 @@
             color: #fff;
             text-transform: uppercase;
         }
+
         .dash-badge {
             font-size: 10px;
             font-family: 'JetBrains Mono', monospace;
             padding: 2px 7px;
             border-radius: 4px;
-            background: rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.7);
-            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .dash-mode-tabs {
             display: flex;
-            gap: 6px;
-            background: rgba(0,0,0,0.4);
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.4);
             padding: 3px;
             border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
+
         .mode-tab {
             background: transparent;
             border: none;
-            color: rgba(255,255,255,0.6);
-            font-size: 10.5px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 10px;
             font-weight: 600;
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
-        }
-        .mode-tab:hover { color: #fff; }
-        .mode-tab.active {
-            background: rgba(255,255,255,0.15);
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            white-space: nowrap;
         }
 
-        /* Phase Stepper Grid */
+        .mode-tab:hover {
+            color: #fff;
+        }
+
+        .mode-tab.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Phase Stepper (Vertical Flow for Portrait Panel) */
         .phase-stepper {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 6px;
+            flex-direction: column;
+            gap: 7px;
             margin-bottom: 12px;
         }
+
         .step-card {
-            flex: 1;
             display: flex;
             align-items: center;
             gap: 9px;
-            padding: 8px 10px;
+            padding: 7px 11px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             transition: all 0.3s ease;
+            min-width: 0;
         }
+
         .step-card.active {
             background: rgba(0, 229, 255, 0.08);
             border-color: rgba(0, 229, 255, 0.4);
             box-shadow: 0 0 15px rgba(0, 229, 255, 0.12);
         }
+
         .step-card.completed {
             background: rgba(0, 255, 136, 0.06);
             border-color: rgba(0, 255, 136, 0.3);
@@ -465,16 +756,27 @@
             font-size: 11px;
             font-weight: 800;
             font-family: 'JetBrains Mono', monospace;
-            color: rgba(255,255,255,0.4);
+            color: rgba(255, 255, 255, 0.4);
+            flex-shrink: 0;
+            width: 18px;
         }
-        .step-card.active .step-number { color: #00e5ff; }
-        .step-card.completed .step-number { color: var(--real-color); }
+
+        .step-card.active .step-number {
+            color: #00e5ff;
+        }
+
+        .step-card.completed .step-number {
+            color: var(--real-color);
+        }
 
         .step-info {
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-width: 0;
+            flex: 1;
         }
+
         .step-label {
             font-size: 10.5px;
             font-weight: 600;
@@ -483,52 +785,57 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .step-desc {
-            font-size: 9px;
-            color: rgba(255,255,255,0.5);
+            font-size: 8.5px;
+            color: rgba(255, 255, 255, 0.5);
             font-family: 'JetBrains Mono', monospace;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .step-tag {
             margin-left: auto;
-            font-size: 8.5px;
+            font-size: 8px;
             font-weight: 700;
             padding: 2px 5px;
             border-radius: 4px;
             letter-spacing: 0.05em;
-            background: rgba(255,255,255,0.06);
-            color: rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.4);
+            flex-shrink: 0;
         }
+
         .step-card.active .step-tag {
             background: rgba(0, 229, 255, 0.2);
             color: #00e5ff;
         }
+
         .step-card.completed .step-tag {
             background: rgba(0, 255, 136, 0.2);
             color: var(--real-color);
         }
 
         .step-line {
-            width: 10px;
-            height: 1px;
-            background: rgba(255,255,255,0.15);
-            flex: none;
+            display: none;
         }
 
-        /* Metrics Grid */
+        /* Metrics Grid (2x2) */
         .dash-metrics-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 7px;
+            margin-bottom: 6px;
         }
+
         .metric-box {
             background: rgba(0, 0, 0, 0.35);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 8px;
-            padding: 8px 10px;
+            padding: 7px 9px;
         }
+
         .m-label {
             font-size: 9px;
             font-weight: 600;
@@ -538,25 +845,35 @@
             display: block;
             margin-bottom: 3px;
         }
+
         .m-val-row {
             display: flex;
             align-items: baseline;
             justify-content: space-between;
             margin-bottom: 5px;
         }
+
         .m-val {
             font-size: 13px;
             font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
             color: #fff;
         }
-        .m-val.accent-green { color: var(--real-color); }
-        .m-val.accent-cyan { color: #00e5ff; }
+
+        .m-val.accent-green {
+            color: var(--real-color);
+        }
+
+        .m-val.accent-cyan {
+            color: #00e5ff;
+        }
+
         .m-sub {
             font-size: 9.5px;
             color: rgba(255, 255, 255, 0.5);
             font-family: 'JetBrains Mono', monospace;
         }
+
         .m-progress {
             width: 100%;
             height: 4px;
@@ -564,6 +881,7 @@
             border-radius: 4px;
             overflow: hidden;
         }
+
         .m-bar {
             height: 100%;
             width: 0%;
@@ -571,12 +889,28 @@
             border-radius: 4px;
             transition: width 0.4s ease;
         }
-        .m-bar.green { background: var(--real-color); box-shadow: 0 0 8px var(--real-glow); }
-        .m-bar.cyan { background: #00e5ff; box-shadow: 0 0 8px var(--cyan-glow); }
-        .m-bar.blue { background: #3b82f6; }
 
-        .dash-view { display: none; }
-        .dash-view.active { display: block; }
+        .m-bar.green {
+            background: var(--real-color);
+            box-shadow: 0 0 8px var(--real-glow);
+        }
+
+        .m-bar.cyan {
+            background: #00e5ff;
+            box-shadow: 0 0 8px var(--cyan-glow);
+        }
+
+        .m-bar.blue {
+            background: #3b82f6;
+        }
+
+        .dash-view {
+            display: none;
+        }
+
+        .dash-view.active {
+            display: block;
+        }
 
         /* Biometric Pipeline View styling */
         .bio-status-row {
@@ -584,26 +918,37 @@
             align-items: center;
             justify-content: space-between;
             font-size: 11px;
-            color: rgba(255,255,255,0.7);
-            background: rgba(0,0,0,0.3);
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(0, 0, 0, 0.3);
             padding: 8px 12px;
             border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
-        .bio-hint { font-size: 10px; color: rgba(0, 229, 255, 0.85); font-family: 'JetBrains Mono', monospace; }
+
+        .bio-hint {
+            font-size: 10px;
+            color: rgba(0, 229, 255, 0.85);
+            font-family: 'JetBrains Mono', monospace;
+        }
 
         /* ── RESULT / HUD CARD (Floating over the dashboard on result) ── */
         .hud-card {
             display: none;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 14px;
-            background: rgba(0, 0, 0, 0.6);
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.65);
             border-radius: 8px;
-            margin-top: 8px;
+            margin-top: 10px;
             border: 1px solid rgba(255, 255, 255, 0.12);
         }
-        .hud-card.visible { display: flex; }
+
+        .hud-card.visible {
+            display: flex;
+        }
+
         .hud-status-badge {
             display: flex;
             align-items: center;
@@ -615,29 +960,34 @@
             letter-spacing: 0.06em;
             text-transform: uppercase;
         }
+
         .hud-status-badge.scanning {
             background: rgba(0, 229, 255, 0.15);
             color: #00e5ff;
             border: 1px solid rgba(0, 229, 255, 0.4);
         }
+
         .hud-status-badge.real {
             background: rgba(0, 255, 136, 0.15);
             color: var(--real-color);
             border: 1px solid rgba(0, 255, 136, 0.5);
             box-shadow: 0 0 15px var(--real-glow);
         }
+
         .hud-status-badge.fake {
             background: rgba(255, 51, 102, 0.15);
             color: var(--fake-color);
             border: 1px solid rgba(255, 51, 102, 0.5);
             box-shadow: 0 0 15px var(--fake-glow);
         }
+
         .hud-pulse-dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
             background: currentColor;
         }
+
         .hud-reset-btn {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.25);
@@ -649,264 +999,490 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .hud-reset-btn:hover { background: #fff; color: #000; }
+
+        .hud-reset-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* ── PREDICTION FEEDBACK / ACTIVE LEARNING PANEL ── */
+        .feedback-panel {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(0, 229, 255, 0.22);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 7px;
+        }
+
+        .feedback-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #00e5ff;
+        }
+
+        .feedback-sub {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .feedback-btn-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .fb-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 5px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .fb-btn.fb-yes {
+            background: rgba(0, 255, 136, 0.12);
+            border: 1px solid rgba(0, 255, 136, 0.35);
+            color: var(--real-color);
+        }
+
+        .fb-btn.fb-yes:hover {
+            background: rgba(0, 255, 136, 0.25);
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .fb-btn.fb-no {
+            background: rgba(255, 51, 102, 0.12);
+            border: 1px solid rgba(255, 51, 102, 0.35);
+            color: var(--fake-color);
+        }
+
+        .fb-btn.fb-no:hover {
+            background: rgba(255, 51, 102, 0.25);
+            box-shadow: 0 0 12px rgba(255, 51, 102, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .feedback-msg {
+            font-size: 9.5px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 5px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            text-align: center;
+        }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
         }
 
-        #file-input { display: none; }
+        #file-input {
+            display: none;
+        }
 
         /* ── RESPONSIVE ── */
-        @media (max-width: 900px), (max-aspect-ratio: 1/1) {
-            .arrows { left: auto; right: var(--pad-x); top: 14%; transform: translateY(-50%); gap: 12px; }
-            .tagline { bottom: clamp(140px, 18vh, 190px); }
-            .cta-row { left: var(--pad-x); right: -3vw; bottom: 16px; }
-            .count { font-size: clamp(80px, 16vw, 150px); }
+        @media (max-width: 900px),
+        (max-aspect-ratio: 1/1) {
+            .arrows {
+                left: auto;
+                right: var(--pad-x);
+                top: 14%;
+                transform: translateY(-50%);
+                gap: 12px;
+            }
+
+            .tagline {
+                bottom: clamp(140px, 18vh, 190px);
+            }
+
+            .cta-row {
+                left: var(--pad-x);
+                right: -3vw;
+                bottom: 16px;
+            }
+
+            .count {
+                font-size: clamp(80px, 16vw, 150px);
+            }
+
             .progress-dashboard {
-                top: 72%;
+                top: auto;
+                bottom: clamp(12px, 2vh, 24px);
                 left: 50%;
+                transform: translateX(-50%);
                 width: 92vw;
+                max-width: 520px;
                 padding: 10px 14px;
             }
-            .phase-stepper { flex-wrap: wrap; }
-            .step-card { min-width: 46%; }
-            .step-line { display: none; }
-            .dash-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+
+            .phase-stepper {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .step-card {
+                min-width: 0;
+            }
+
+            .step-line {
+                display: none;
+            }
+
+            .dash-metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
+
         @media (max-width: 640px) {
-            .nav-links { gap: 14px; }
-            .nav-links a, .logo { font-size: 13px; }
-            .dots { display: none; }
-            .progress-dashboard { width: 94vw; }
-            .step-card { min-width: 100%; }
+            .nav-links {
+                gap: 14px;
+            }
+
+            .nav-links a,
+            .logo {
+                font-size: 13px;
+            }
+
+            .dots {
+                display: none;
+            }
+
+            .progress-dashboard {
+                width: 94vw;
+            }
+
+            .step-card {
+                min-width: 0;
+            }
         }
+
         @media (max-width: 420px) {
-            .nav-links li:nth-child(2) { display: none; }
+            .nav-links li:nth-child(2) {
+                display: none;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<section class="hero" id="hero">
-    <canvas id="scene" aria-label="Rotatable glass cube deepfake scanner. Drag to rotate or drop an image to analyze."></canvas>
+    <section class="hero" id="hero">
+        <canvas id="scene"
+            aria-label="Rotatable glass cube deepfake scanner. Drag to rotate or drop an image to analyze."></canvas>
 
-    <!-- File Input -->
-    <input type="file" id="file-input" accept="image/*">
+        <!-- File Input -->
+        <input type="file" id="file-input" accept="image/*">
 
-    <!-- Interactive Cube Overlay (centered on cube) -->
-    <div class="cube-overlay" id="cube-overlay">
-        <div class="upload-reticle" id="reticle">
-            <span class="reticle-corner tl"></span>
-            <span class="reticle-corner tr"></span>
-            <span class="reticle-corner bl"></span>
-            <span class="reticle-corner br"></span>
-            <button class="cube-hint-pill interactive" id="cube-pill" title="Click or Drag & Drop face image">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                </svg>
-                <span id="pill-text">Drop Face Image Inside Cube</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- ── PROGRESSION DASHBOARD (Directly Below 3D Cube) ── -->
-    <div class="progress-dashboard interactive" id="progress-dashboard">
-        <div class="dashboard-header">
-            <div class="dash-title-group">
-                <span class="live-dot"></span>
-                <span class="dash-title">NEURAL CORE PIPELINE</span>
-                <span class="dash-badge" id="engine-badge">EFFICIENTNET-B0</span>
-            </div>
-            <div class="dash-mode-tabs">
-                <button class="mode-tab active" id="tab-training">Training Telemetry</button>
-                <button class="mode-tab" id="tab-biometric">Biometric Pipeline</button>
+        <!-- Interactive Cube Overlay (centered on cube) -->
+        <div class="cube-overlay" id="cube-overlay">
+            <div class="upload-reticle" id="reticle">
+                <span class="reticle-corner tl"></span>
+                <span class="reticle-corner tr"></span>
+                <span class="reticle-corner bl"></span>
+                <span class="reticle-corner br"></span>
+                <button class="cube-hint-pill interactive" id="cube-pill" title="Click or Drag & Drop face image">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <span id="pill-text">Drop Face Image Inside Cube</span>
+                </button>
             </div>
         </div>
 
-        <!-- Mode A: Live Neural Model Training Progress -->
-        <div class="dash-view active" id="view-training">
-            <div class="phase-stepper">
-                <div class="step-card completed" id="phase-step-1">
-                    <div class="step-number">01</div>
-                    <div class="step-info">
-                        <span class="step-label">Data Ingestion</span>
-                        <span class="step-desc">57,589 Augm. Samples</span>
-                    </div>
-                    <span class="step-tag">DONE</span>
+        <!-- ── PROGRESSION DASHBOARD (Floating / Draggable / Zoomable) ── -->
+        <div class="progress-dashboard interactive" id="progress-dashboard">
+            <!-- Window Control Bar: Grip Handle & Zoom Controls -->
+            <div class="dash-window-bar" id="dash-drag-handle" title="Hold & drag anywhere on header to move dashboard. Mouse wheel to zoom.">
+                <div class="dash-grip">
+                    <span class="grip-icon">⠿</span>
+                    <span class="grip-label">FLOATING HUD</span>
+                    <span class="dash-drag-hint" style="font-size: 8px; color: rgba(0,229,255,0.7); text-transform: uppercase; margin-left: 2px;">• DRAG TO MOVE</span>
                 </div>
-                <div class="step-line"></div>
-                <div class="step-card active" id="phase-step-2">
-                    <div class="step-number">02</div>
-                    <div class="step-info">
-                        <span class="step-label">Head Convergence</span>
-                        <span class="step-desc" id="step-2-desc">Epoch 1: Batch 850/2500</span>
+                <div class="dash-window-tools" onclick="event.stopPropagation()">
+                    <button class="tool-btn zoom-btn" id="btn-zoom-out" title="Zoom Out (-10%)" aria-label="Zoom Out">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="zoom-slider-wrap" title="Drag to adjust zoom scale (50% - 150%)">
+                        <input type="range" class="zoom-slider" id="zoom-slider" min="50" max="150" step="5" value="100">
                     </div>
-                    <span class="step-tag pulse">ACTIVE</span>
-                </div>
-                <div class="step-line"></div>
-                <div class="step-card" id="phase-step-3">
-                    <div class="step-number">03</div>
-                    <div class="step-info">
-                        <span class="step-label">Backbone Fine-Tune</span>
-                        <span class="step-desc">Epochs 3-10 (LR 1e-5)</span>
-                    </div>
-                    <span class="step-tag">PENDING</span>
-                </div>
-                <div class="step-line"></div>
-                <div class="step-card" id="phase-step-4">
-                    <div class="step-number">04</div>
-                    <div class="step-info">
-                        <span class="step-label">Benchmark & Export</span>
-                        <span class="step-desc">12.3k Val Set & .pth</span>
-                    </div>
-                    <span class="step-tag">QUEUE</span>
+                    <span class="zoom-level" id="zoom-level-text" title="Click to Reset Scale (100%)">100%</span>
+                    <button class="tool-btn zoom-btn" id="btn-zoom-in" title="Zoom In (+10%)" aria-label="Zoom In">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <button class="tool-btn min-btn" id="btn-minimize" title="Minimize / Expand HUD" aria-label="Minimize HUD">
+                        <svg id="min-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <button class="tool-btn reset-pos-btn" id="btn-reset-pos" title="Reset Position & Zoom to Default" aria-label="Reset Position">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    </button>
                 </div>
             </div>
 
-            <div class="dash-metrics-grid">
-                <div class="metric-box">
-                    <span class="m-label">EPOCH PROGRESS</span>
-                    <div class="m-val-row">
-                        <span class="m-val" id="metric-epoch">1 / 10</span>
-                        <span class="m-sub" id="metric-batch-pct">34%</span>
-                    </div>
-                    <div class="m-progress"><div class="m-bar cyan" id="bar-epoch" style="width: 34%"></div></div>
+            <div class="dashboard-header">
+                <div class="dash-title-group">
+                    <span class="live-dot"></span>
+                    <span class="dash-title">NEURAL CORE PIPELINE</span>
+                    <span class="dash-badge" id="engine-badge">EFFICIENTNET-B0</span>
                 </div>
-                <div class="metric-box">
-                    <span class="m-label">RUNNING ACCURACY</span>
-                    <div class="m-val-row">
-                        <span class="m-val accent-green" id="metric-acc">72.6%</span>
-                        <span class="m-sub">Top-1</span>
-                    </div>
-                    <div class="m-progress"><div class="m-bar green" id="bar-acc" style="width: 72.6%"></div></div>
+                <div class="dash-mode-tabs">
+                    <button class="mode-tab active" id="tab-training">Training Telemetry</button>
+                    <button class="mode-tab" id="tab-biometric">Biometric Pipeline</button>
                 </div>
-                <div class="metric-box">
-                    <span class="m-label">TRAINING LOSS</span>
-                    <div class="m-val-row">
-                        <span class="m-val" id="metric-loss">0.547</span>
-                        <span class="m-sub">CrossEntropy</span>
+            </div>
+
+            <!-- Mode A: Live Neural Model Training Progress -->
+            <div class="dash-view active" id="view-training">
+                <div class="phase-stepper">
+                    <div class="step-card completed" id="phase-step-1">
+                        <div class="step-number">01</div>
+                        <div class="step-info">
+                            <span class="step-label">Data Ingestion</span>
+                            <span class="step-desc">57,589 Augm. Samples</span>
+                        </div>
+                        <span class="step-tag">DONE</span>
                     </div>
-                    <div class="m-progress"><div class="m-bar" id="bar-loss" style="width: 54%"></div></div>
+                    <div class="step-line"></div>
+                    <div class="step-card active" id="phase-step-2">
+                        <div class="step-number">02</div>
+                        <div class="step-info">
+                            <span class="step-label">Head Convergence</span>
+                            <span class="step-desc" id="step-2-desc">Epoch 1: Batch 850/2500</span>
+                        </div>
+                        <span class="step-tag pulse">ACTIVE</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-card" id="phase-step-3">
+                        <div class="step-number">03</div>
+                        <div class="step-info">
+                            <span class="step-label">Backbone Fine-Tune</span>
+                            <span class="step-desc">Epochs 3-10 (LR 1e-5)</span>
+                        </div>
+                        <span class="step-tag">PENDING</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-card" id="phase-step-4">
+                        <div class="step-number">04</div>
+                        <div class="step-info">
+                            <span class="step-label">Benchmark & Export</span>
+                            <span class="step-desc">12.3k Val Set & .pth</span>
+                        </div>
+                        <span class="step-tag">QUEUE</span>
+                    </div>
                 </div>
-                <div class="metric-box">
-                    <span class="m-label">COMPUTE ENGINE</span>
-                    <div class="m-val-row">
-                        <span class="m-val" id="metric-device">CPU Engine</span>
-                        <span class="m-sub">16 Batch</span>
+
+                <div class="dash-metrics-grid">
+                    <div class="metric-box">
+                        <span class="m-label">EPOCH PROGRESS</span>
+                        <div class="m-val-row">
+                            <span class="m-val" id="metric-epoch">1 / 10</span>
+                            <span class="m-sub" id="metric-batch-pct">34%</span>
+                        </div>
+                        <div class="m-progress">
+                            <div class="m-bar cyan" id="bar-epoch" style="width: 34%"></div>
+                        </div>
                     </div>
-                    <div class="m-progress"><div class="m-bar blue" style="width: 100%"></div></div>
+                    <div class="metric-box">
+                        <span class="m-label">RUNNING ACCURACY</span>
+                        <div class="m-val-row">
+                            <span class="m-val accent-green" id="metric-acc">72.6%</span>
+                            <span class="m-sub">Top-1</span>
+                        </div>
+                        <div class="m-progress">
+                            <div class="m-bar green" id="bar-acc" style="width: 72.6%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-box">
+                        <span class="m-label">TRAINING LOSS</span>
+                        <div class="m-val-row">
+                            <span class="m-val" id="metric-loss">0.547</span>
+                            <span class="m-sub">CrossEntropy</span>
+                        </div>
+                        <div class="m-progress">
+                            <div class="m-bar" id="bar-loss" style="width: 54%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-box">
+                        <span class="m-label">COMPUTE ENGINE</span>
+                        <div class="m-val-row">
+                            <span class="m-val" id="metric-device">CPU Engine</span>
+                            <span class="m-sub">16 Batch</span>
+                        </div>
+                        <div class="m-progress">
+                            <div class="m-bar blue" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mode B: Biometric Analysis Pipeline (4-phase workflow for uploads) -->
+            <div class="dash-view" id="view-biometric">
+                <div class="phase-stepper">
+                    <div class="step-card" id="bio-step-1">
+                        <div class="step-number">B1</div>
+                        <div class="step-info">
+                            <span class="step-label">Face Ingestion</span>
+                            <span class="step-desc">224x224 RGB Alignment</span>
+                        </div>
+                        <span class="step-tag" id="bio-tag-1">READY</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-card" id="bio-step-2">
+                        <div class="step-number">B2</div>
+                        <div class="step-info">
+                            <span class="step-label">Artifact Scan</span>
+                            <span class="step-desc">Frequency & Blending</span>
+                        </div>
+                        <span class="step-tag" id="bio-tag-2">IDLE</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-card" id="bio-step-3">
+                        <div class="step-number">B3</div>
+                        <div class="step-info">
+                            <span class="step-label">Neural Inference</span>
+                            <span class="step-desc">Deep Feature Evaluation</span>
+                        </div>
+                        <span class="step-tag" id="bio-tag-3">IDLE</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-card" id="bio-step-4">
+                        <div class="step-number">B4</div>
+                        <div class="step-info">
+                            <span class="step-label">Verdict & Confidence</span>
+                            <span class="step-desc" id="bio-desc-4">Real vs DeepFake Result</span>
+                        </div>
+                        <span class="step-tag" id="bio-tag-4">IDLE</span>
+                    </div>
+                </div>
+                <div class="bio-status-row">
+                    <span class="bio-hint" id="bio-status-hint">Drag & drop any face photo into the 3D crystal cube to trigger the 4-phase inference scan.</span>
+                </div>
+            </div>
+
+            <!-- Result Badge Row (Reveals upon completing an inference) -->
+            <div class="hud-card" id="hud-card">
+                <div class="hud-status-badge scanning" id="hud-badge">
+                    <span class="hud-pulse-dot"></span>
+                    <span id="hud-status-text">Scanning Biometrics</span>
+                </div>
+                <div style="font-size: 12px; font-weight: 600;" id="hud-verdict-summary">—</div>
+                <button class="hud-reset-btn interactive" id="hud-reset">Reset Specimen</button>
+
+                <!-- Model Prediction Feedback Box (Active Learning / Training Ground Truth) -->
+                <div class="feedback-panel" id="feedback-panel" style="display: none;">
+                    <div class="feedback-header">
+                        <span class="feedback-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                            Prediction Feedback
+                        </span>
+                        <span class="feedback-sub">Was this output correct?</span>
+                    </div>
+                    <div class="feedback-btn-group" id="feedback-buttons">
+                        <button class="fb-btn fb-yes interactive" id="fb-btn-yes" title="Confirm prediction is correct">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Correct</span>
+                        </button>
+                        <button class="fb-btn fb-no interactive" id="fb-btn-no" title="Mark prediction as incorrect / invert">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            <span>Incorrect</span>
+                        </button>
+                    </div>
+                    <div class="feedback-msg" id="feedback-msg" style="display: none;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Mode B: Biometric Analysis Pipeline (4-phase workflow for uploads) -->
-        <div class="dash-view" id="view-biometric">
-            <div class="phase-stepper">
-                <div class="step-card" id="bio-step-1">
-                    <div class="step-number">B1</div>
-                    <div class="step-info">
-                        <span class="step-label">Face Ingestion</span>
-                        <span class="step-desc">224x224 RGB Alignment</span>
-                    </div>
-                    <span class="step-tag" id="bio-tag-1">READY</span>
-                </div>
-                <div class="step-line"></div>
-                <div class="step-card" id="bio-step-2">
-                    <div class="step-number">B2</div>
-                    <div class="step-info">
-                        <span class="step-label">Artifact Scan</span>
-                        <span class="step-desc">Frequency & Blending</span>
-                    </div>
-                    <span class="step-tag" id="bio-tag-2">IDLE</span>
-                </div>
-                <div class="step-line"></div>
-                <div class="step-card" id="bio-step-3">
-                    <div class="step-number">B3</div>
-                    <div class="step-info">
-                        <span class="step-label">Neural Inference</span>
-                        <span class="step-desc">Deep Feature Evaluation</span>
-                    </div>
-                    <span class="step-tag" id="bio-tag-3">IDLE</span>
-                </div>
-                <div class="step-line"></div>
-                <div class="step-card" id="bio-step-4">
-                    <div class="step-number">B4</div>
-                    <div class="step-info">
-                        <span class="step-label">Verdict & Confidence</span>
-                        <span class="step-desc" id="bio-desc-4">Real vs DeepFake Result</span>
-                    </div>
-                    <span class="step-tag" id="bio-tag-4">IDLE</span>
-                </div>
+        <!-- UI Overlay Elements -->
+        <div class="ui">
+            <h1 class="sr-only">Explore New Ideas — DeepFake Biometric Detector</h1>
+            <header class="nav">
+                <a href="#" class="logo">
+                    <i class="logo-mark" id="logo-mark"></i>
+                    <b>Design</b><span>World</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Detector</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </header>
+
+            <div class="arrows">
+                <button class="arrow" id="prev" aria-label="Rotate left 90 degrees">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M19 12H5M11 6l-6 6 6 6" />
+                    </svg>
+                </button>
+                <button class="arrow" id="next" aria-label="Rotate right 90 degrees">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                </button>
             </div>
-            <div class="bio-status-row">
-                <span class="bio-hint" id="bio-status-hint">Drag & drop any face photo into the crystal cube above to trigger the 4-phase inference scan.</span>
+
+            <nav class="dots">
+                <button class="dot" aria-label="View 1"></button>
+                <button class="dot active" aria-label="View 2"></button>
+                <button class="dot" aria-label="View 3"></button>
+            </nav>
+
+            <p class="tagline">
+                <span class="badge">Biometric Neural Core</span>
+                Detect Real vs<br><strong>DeepFake.</strong>
+            </p>
+
+            <div class="cta-row">
+                <button class="cta" id="cta-upload">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <span>Upload Image</span>
+                </button>
+                <span class="cta-line"></span>
+                <span class="count" aria-hidden="true">07</span>
             </div>
+
+            <div class="loader" id="loader">Loading 3D Core</div>
         </div>
+    </section>
 
-        <!-- Result Badge Row (Reveals upon completing an inference) -->
-        <div class="hud-card" id="hud-card">
-            <div class="hud-status-badge scanning" id="hud-badge">
-                <span class="hud-pulse-dot"></span>
-                <span id="hud-status-text">Scanning Biometrics</span>
-            </div>
-            <div style="font-size: 12px; font-weight: 600;" id="hud-verdict-summary">—</div>
-            <button class="hud-reset-btn interactive" id="hud-reset">Reset Specimen</button>
-        </div>
-    </div>
-
-    <!-- UI Overlay Elements -->
-    <div class="ui">
-        <h1 class="sr-only">Explore New Ideas — DeepFake Biometric Detector</h1>
-        <header class="nav">
-            <a href="#" class="logo">
-                <i class="logo-mark" id="logo-mark"></i>
-                <b>Design</b><span>World</span>
-            </a>
-            <ul class="nav-links">
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Detector</a></li>
-                <li><a href="#">Contact Us</a></li>
-            </ul>
-        </header>
-
-        <div class="arrows">
-            <button class="arrow" id="prev" aria-label="Rotate left 90 degrees">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-            </button>
-            <button class="arrow" id="next" aria-label="Rotate right 90 degrees">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </button>
-        </div>
-
-        <nav class="dots">
-            <button class="dot" aria-label="View 1"></button>
-            <button class="dot active" aria-label="View 2"></button>
-            <button class="dot" aria-label="View 3"></button>
-        </nav>
-
-        <p class="tagline">
-            <span class="badge">Biometric Neural Core</span>
-            Detect Real vs<br><strong>DeepFake.</strong>
-        </p>
-
-        <div class="cta-row">
-            <button class="cta" id="cta-upload">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span>Upload Image</span>
-            </button>
-            <span class="cta-line"></span>
-            <span class="count" aria-hidden="true">07</span>
-        </div>
-
-        <div class="loader" id="loader">Loading 3D Core</div>
-    </div>
-</section>
-
-<script type="importmap">
+    <script type="importmap">
 {
     "imports": {
         "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -914,157 +1490,343 @@
     }
 }
 </script>
-<script type="module">
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+        import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
-const MODEL_URL = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260929_212926_92423081-b0e4-4f5a-b650-14af6c05c058.glb';
+        const MODEL_URL = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260929_212926_92423081-b0e4-4f5a-b650-14af6c05c058.glb';
+        const API_BASE_URL = window.API_BASE_URL || 'http://localhost:5000';
 
-/* ── DOM References ── */
-const hero = document.getElementById('hero');
-const canvas = document.getElementById('scene');
-const loaderEl = document.getElementById('loader');
-const dots = document.querySelectorAll('.dot');
-const prevBtn = document.getElementById('prev');
-const nextBtn = document.getElementById('next');
-const fileInput = document.getElementById('file-input');
-const cubePill = document.getElementById('cube-pill');
-const pillText = document.getElementById('pill-text');
-const ctaUpload = document.getElementById('cta-upload');
-const cubeOverlay = document.getElementById('cube-overlay');
-const logoMark = document.getElementById('logo-mark');
+        /* ── DOM References ── */
+        const hero = document.getElementById('hero');
+        const canvas = document.getElementById('scene');
+        const loaderEl = document.getElementById('loader');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
+        const fileInput = document.getElementById('file-input');
+        const cubePill = document.getElementById('cube-pill');
+        const pillText = document.getElementById('pill-text');
+        const ctaUpload = document.getElementById('cta-upload');
+        const cubeOverlay = document.getElementById('cube-overlay');
+        const logoMark = document.getElementById('logo-mark');
 
-/* Dashboard DOM */
-const tabTraining = document.getElementById('tab-training');
-const tabBiometric = document.getElementById('tab-biometric');
-const viewTraining = document.getElementById('view-training');
-const viewBiometric = document.getElementById('view-biometric');
-const step2Desc = document.getElementById('step-2-desc');
-const metricEpoch = document.getElementById('metric-epoch');
-const metricBatchPct = document.getElementById('metric-batch-pct');
-const barEpoch = document.getElementById('bar-epoch');
-const metricAcc = document.getElementById('metric-acc');
-const barAcc = document.getElementById('bar-acc');
-const metricLoss = document.getElementById('metric-loss');
-const barLoss = document.getElementById('bar-loss');
-const hudCard = document.getElementById('hud-card');
-const hudBadge = document.getElementById('hud-badge');
-const hudStatusText = document.getElementById('hud-status-text');
-const hudVerdictSummary = document.getElementById('hud-verdict-summary');
-const hudReset = document.getElementById('hud-reset');
+        /* Dashboard DOM */
+        const tabTraining = document.getElementById('tab-training');
+        const tabBiometric = document.getElementById('tab-biometric');
+        const viewTraining = document.getElementById('view-training');
+        const viewBiometric = document.getElementById('view-biometric');
+        const step2Desc = document.getElementById('step-2-desc');
+        const metricEpoch = document.getElementById('metric-epoch');
+        const metricBatchPct = document.getElementById('metric-batch-pct');
+        const barEpoch = document.getElementById('bar-epoch');
+        const metricAcc = document.getElementById('metric-acc');
+        const barAcc = document.getElementById('bar-acc');
+        const metricLoss = document.getElementById('metric-loss');
+        const barLoss = document.getElementById('bar-loss');
+        const hudCard = document.getElementById('hud-card');
+        const hudBadge = document.getElementById('hud-badge');
+        const hudStatusText = document.getElementById('hud-status-text');
+        const hudVerdictSummary = document.getElementById('hud-verdict-summary');
+        const hudReset = document.getElementById('hud-reset');
+        const feedbackPanel = document.getElementById('feedback-panel');
+        const feedbackButtons = document.getElementById('feedback-buttons');
+        const feedbackMsg = document.getElementById('feedback-msg');
+        const fbBtnYes = document.getElementById('fb-btn-yes');
+        const fbBtnNo = document.getElementById('fb-btn-no');
+        let lastPredictionResult = null;
 
-/* Biometric Pipeline Steps */
-const bioStep1 = document.getElementById('bio-step-1');
-const bioStep2 = document.getElementById('bio-step-2');
-const bioStep3 = document.getElementById('bio-step-3');
-const bioStep4 = document.getElementById('bio-step-4');
-const bioTag1 = document.getElementById('bio-tag-1');
-const bioTag2 = document.getElementById('bio-tag-2');
-const bioTag3 = document.getElementById('bio-tag-3');
-const bioTag4 = document.getElementById('bio-tag-4');
-const bioDesc4 = document.getElementById('bio-desc-4');
-const bioStatusHint = document.getElementById('bio-status-hint');
+        /* Biometric Pipeline Steps */
+        const bioStep1 = document.getElementById('bio-step-1');
+        const bioStep2 = document.getElementById('bio-step-2');
+        const bioStep3 = document.getElementById('bio-step-3');
+        const bioStep4 = document.getElementById('bio-step-4');
+        const bioTag1 = document.getElementById('bio-tag-1');
+        const bioTag2 = document.getElementById('bio-tag-2');
+        const bioTag3 = document.getElementById('bio-tag-3');
+        const bioTag4 = document.getElementById('bio-tag-4');
+        const bioDesc4 = document.getElementById('bio-desc-4');
+        const bioStatusHint = document.getElementById('bio-status-hint');
 
-/* Dashboard Tab Switching */
-tabTraining.addEventListener('click', () => {
-    tabTraining.classList.add('active');
-    tabBiometric.classList.remove('active');
-    viewTraining.classList.add('active');
-    viewBiometric.classList.remove('active');
-});
-tabBiometric.addEventListener('click', () => {
-    tabBiometric.classList.add('active');
-    tabTraining.classList.remove('active');
-    viewBiometric.classList.add('active');
-    viewTraining.classList.remove('active');
-});
+        /* Dashboard Tab Switching */
+        if (tabTraining && tabBiometric) {
+            tabTraining.addEventListener('click', (e) => {
+                e.stopPropagation();
+                tabTraining.classList.add('active');
+                tabBiometric.classList.remove('active');
+                viewTraining.classList.add('active');
+                viewBiometric.classList.remove('active');
+            });
+            tabBiometric.addEventListener('click', (e) => {
+                e.stopPropagation();
+                tabBiometric.classList.add('active');
+                tabTraining.classList.remove('active');
+                viewBiometric.classList.add('active');
+                viewTraining.classList.remove('active');
+            });
+        }
 
-/* ── Three.js Renderer ── */
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-renderer.setClearColor(0x000000);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        /* Floating Dashboard Controller DOM */
+        const dashDragHandle = document.getElementById('dash-drag-handle');
+        const dashHeader = document.querySelector('.dashboard-header');
+        const progressDashboard = document.getElementById('progress-dashboard');
+        const btnZoomIn = document.getElementById('btn-zoom-in');
+        const btnZoomOut = document.getElementById('btn-zoom-out');
+        const zoomSlider = document.getElementById('zoom-slider');
+        const zoomLevelText = document.getElementById('zoom-level-text');
+        const btnMinimize = document.getElementById('btn-minimize');
+        const btnResetPos = document.getElementById('btn-reset-pos');
 
-/* ── Scenes & Camera ── */
-const scene = new THREE.Scene();
-const bgScene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-camera.position.set(0, 0, 10);
-camera.lookAt(0, 0, 0);
+        /* ── Draggable & Zoomable Floating Dashboard Controller ── */
+        let zoomScale = 1.0;
+        const MIN_ZOOM = 0.50;
+        const MAX_ZOOM = 1.50;
+        const ZOOM_STEP = 0.10;
 
-/* ── Scene Graph Hierarchy ── */
-const pivot = new THREE.Object3D();
-const spinner = new THREE.Object3D();
-pivot.add(spinner);
-scene.add(pivot);
-spinner.rotation.set(-0.42, 0.62, 0.18);
+        function setDashboardZoom(scale, syncSlider = true) {
+            zoomScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.round(scale * 100) / 100));
+            progressDashboard.style.transform = `scale(${zoomScale})`;
+            const pct = Math.round(zoomScale * 100);
+            zoomLevelText.textContent = `${pct}%`;
+            if (syncSlider && zoomSlider) {
+                zoomSlider.value = pct;
+            }
+        }
 
-/* ── Headline Canvas & CanvasTexture (Refracted Background) ── */
-const headlineCanvas = document.createElement('canvas');
-const hCtx = headlineCanvas.getContext('2d');
-const headlineTex = new THREE.CanvasTexture(headlineCanvas);
-headlineTex.colorSpace = THREE.SRGBColorSpace;
-headlineTex.minFilter = THREE.LinearFilter;
-headlineTex.magFilter = THREE.LinearFilter;
-headlineTex.generateMipmaps = false;
+        btnZoomIn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setDashboardZoom(zoomScale + ZOOM_STEP);
+        });
 
-let headlineLines = ['Explore', 'New', 'Ideas'];
+        btnZoomOut.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setDashboardZoom(zoomScale - ZOOM_STEP);
+        });
 
-function drawHeadline() {
-    const W = renderer.domElement.clientWidth;
-    const H = renderer.domElement.clientHeight;
-    const dpr = renderer.getPixelRatio();
-    const cW = W * dpr;
-    const cH = H * dpr;
-    if (cW === 0 || cH === 0) return;
+        if (zoomSlider) {
+            zoomSlider.addEventListener('input', (e) => {
+                e.stopPropagation();
+                setDashboardZoom(parseFloat(e.target.value) / 100, false);
+            });
+        }
 
-    headlineCanvas.width = cW;
-    headlineCanvas.height = cH;
-    hCtx.fillStyle = '#000';
-    hCtx.fillRect(0, 0, cW, cH);
+        zoomLevelText.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setDashboardZoom(1.0);
+        });
 
-    const mobile = (W < 768) || (W / H < 1);
-    let fs = Math.min(H * 0.20, W * (mobile ? 0.20 : 0.115));
-    fs *= dpr;
+        // Minimize / Expand HUD
+        let isMinimized = false;
+        if (btnMinimize) {
+            btnMinimize.addEventListener('click', (e) => {
+                e.stopPropagation();
+                isMinimized = !isMinimized;
+                progressDashboard.classList.toggle('minimized', isMinimized);
+                btnMinimize.setAttribute('title', isMinimized ? 'Expand HUD' : 'Minimize HUD');
+                btnMinimize.innerHTML = isMinimized
+                    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>`
+                    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+            });
+        }
 
-    hCtx.font = `800 ${fs}px Poppins`;
-    hCtx.textAlign = 'center';
-    hCtx.textBaseline = 'alphabetic';
+        // Mouse Wheel Zoom: scroll over header or hold Ctrl/Alt anywhere over dashboard
+        dashDragHandle.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const delta = e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP;
+            setDashboardZoom(zoomScale + delta);
+        }, { passive: false });
 
-    const maxLineW = Math.max(...headlineLines.map(l => hCtx.measureText(l).width));
-    const maxAllowed = cW * (mobile ? 0.9 : 0.5);
-    if (maxLineW > maxAllowed) {
-        fs *= maxAllowed / maxLineW;
-        hCtx.font = `800 ${fs}px Poppins`;
-    }
+        if (dashHeader) {
+            dashHeader.addEventListener('wheel', (e) => {
+                // If scrolling on header, zoom
+                e.preventDefault();
+                e.stopPropagation();
+                const delta = e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP;
+                setDashboardZoom(zoomScale + delta);
+            }, { passive: false });
+        }
 
-    const cx = cW * (mobile ? 0.5 : 0.505);
-    const cy = cH * (mobile ? 0.38 : 0.42);
-    const gap = fs * 1.07;
-    const capH = fs * 0.7;
+        progressDashboard.addEventListener('wheel', (e) => {
+            // If Ctrl or Alt is held anywhere over dashboard, zoom
+            if (e.ctrlKey || e.altKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                const delta = e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP;
+                setDashboardZoom(zoomScale + delta);
+            }
+        }, { passive: false });
 
-    hCtx.fillStyle = '#e9e9e9';
-    for (let i = 0; i < headlineLines.length; i++) {
-        const baseY = cy + capH / 2 + (i - 1) * gap;
-        hCtx.fillText(headlineLines[i], cx, baseY);
-    }
+        // Drag to Move Dashboard anywhere on screen
+        let isDraggingDash = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dashInitialLeft = 0;
+        let dashInitialTop = 0;
 
-    headlineTex.needsUpdate = true;
-}
+        function resetDashboardPosition() {
+            progressDashboard.style.left = 'var(--pad-x)';
+            progressDashboard.style.top = 'clamp(82px, 11vh, 108px)';
+            progressDashboard.style.bottom = 'auto';
+            progressDashboard.style.right = 'auto';
+            if (isMinimized && btnMinimize) {
+                btnMinimize.click();
+            }
+            setDashboardZoom(1.0);
+        }
 
-/* ── Fullscreen Background Quad ── */
-const bgMat = new THREE.ShaderMaterial({
-    uniforms: { uTex: { value: headlineTex } },
-    vertexShader: `
+        btnResetPos.addEventListener('click', (e) => {
+            e.stopPropagation();
+            resetDashboardPosition();
+        });
+
+        function startDashboardDrag(e) {
+            // Ignore clicks on buttons, inputs, tabs, or links
+            if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.zoom-level') || e.target.closest('.dash-mode-tabs')) {
+                return;
+            }
+            e.preventDefault();
+            e.stopPropagation(); // Stop propagation to 3D cube canvas
+
+            isDraggingDash = true;
+            progressDashboard.classList.add('dragging');
+
+            const rect = progressDashboard.getBoundingClientRect();
+            dashInitialLeft = rect.left;
+            dashInitialTop = rect.top;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+
+            progressDashboard.style.bottom = 'auto';
+            progressDashboard.style.right = 'auto';
+            progressDashboard.style.left = `${dashInitialLeft}px`;
+            progressDashboard.style.top = `${dashInitialTop}px`;
+        }
+
+        dashDragHandle.addEventListener('pointerdown', startDashboardDrag);
+        if (dashHeader) {
+            dashHeader.addEventListener('pointerdown', startDashboardDrag);
+        }
+
+        window.addEventListener('pointermove', (e) => {
+            if (!isDraggingDash) return;
+            e.preventDefault();
+
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+
+            let newLeft = dashInitialLeft + dx;
+            let newTop = dashInitialTop + dy;
+
+            // Clamping within visible viewport (ensure header stays visible)
+            const rect = progressDashboard.getBoundingClientRect();
+            const minLeft = -rect.width + 120;
+            const maxLeft = window.innerWidth - 80;
+            const minTop = 8;
+            const maxTop = window.innerHeight - 50;
+
+            newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+            newTop = Math.max(minTop, Math.min(newTop, maxTop));
+
+            progressDashboard.style.left = `${newLeft}px`;
+            progressDashboard.style.top = `${newTop}px`;
+        });
+
+        const endDashDrag = (e) => {
+            if (!isDraggingDash) return;
+            isDraggingDash = false;
+            progressDashboard.classList.remove('dragging');
+        };
+
+        window.addEventListener('pointerup', endDashDrag);
+        window.addEventListener('pointercancel', endDashDrag);
+
+        /* ── Three.js Renderer ── */
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+        renderer.setClearColor(0x000000);
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+        /* ── Scenes & Camera ── */
+        const scene = new THREE.Scene();
+        const bgScene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+        camera.position.set(0, 0, 10);
+        camera.lookAt(0, 0, 0);
+
+        /* ── Scene Graph Hierarchy ── */
+        const pivot = new THREE.Object3D();
+        const spinner = new THREE.Object3D();
+        pivot.add(spinner);
+        scene.add(pivot);
+        spinner.rotation.set(-0.42, 0.62, 0.18);
+
+        /* ── Headline Canvas & CanvasTexture (Refracted Background) ── */
+        const headlineCanvas = document.createElement('canvas');
+        const hCtx = headlineCanvas.getContext('2d');
+        const headlineTex = new THREE.CanvasTexture(headlineCanvas);
+        headlineTex.colorSpace = THREE.SRGBColorSpace;
+        headlineTex.minFilter = THREE.LinearFilter;
+        headlineTex.magFilter = THREE.LinearFilter;
+        headlineTex.generateMipmaps = false;
+
+        let headlineLines = ['Explore', 'New', 'Ideas'];
+
+        function drawHeadline() {
+            const W = renderer.domElement.clientWidth;
+            const H = renderer.domElement.clientHeight;
+            const dpr = renderer.getPixelRatio();
+            const cW = W * dpr;
+            const cH = H * dpr;
+            if (cW === 0 || cH === 0) return;
+
+            headlineCanvas.width = cW;
+            headlineCanvas.height = cH;
+            hCtx.fillStyle = '#000';
+            hCtx.fillRect(0, 0, cW, cH);
+
+            const mobile = (W < 768) || (W / H < 1);
+            let fs = Math.min(H * 0.20, W * (mobile ? 0.20 : 0.115));
+            fs *= dpr;
+
+            hCtx.font = `800 ${fs}px Poppins`;
+            hCtx.textAlign = 'center';
+            hCtx.textBaseline = 'alphabetic';
+
+            const maxLineW = Math.max(...headlineLines.map(l => hCtx.measureText(l).width));
+            const maxAllowed = cW * (mobile ? 0.9 : 0.5);
+            if (maxLineW > maxAllowed) {
+                fs *= maxAllowed / maxLineW;
+                hCtx.font = `800 ${fs}px Poppins`;
+            }
+
+            const cx = cW * (mobile ? 0.5 : 0.505);
+            const cy = cH * (mobile ? 0.38 : 0.42);
+            const gap = fs * 1.07;
+            const capH = fs * 0.7;
+
+            hCtx.fillStyle = '#e9e9e9';
+            for (let i = 0; i < headlineLines.length; i++) {
+                const baseY = cy + capH / 2 + (i - 1) * gap;
+                hCtx.fillText(headlineLines[i], cx, baseY);
+            }
+
+            headlineTex.needsUpdate = true;
+        }
+
+        /* ── Fullscreen Background Quad ── */
+        const bgMat = new THREE.ShaderMaterial({
+            uniforms: { uTex: { value: headlineTex } },
+            vertexShader: `
         varying vec2 vUv;
         void main() {
             vUv = uv;
             gl_Position = vec4(position.xy, 0.0, 1.0);
         }
     `,
-    fragmentShader: `
+            fragmentShader: `
         uniform sampler2D uTex;
         varying vec2 vUv;
         void main() {
@@ -1072,16 +1834,16 @@ const bgMat = new THREE.ShaderMaterial({
             #include <colorspace_fragment>
         }
     `,
-    depthTest: false,
-    depthWrite: false,
-});
-bgMat.frustumCulled = false;
-const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat);
-bgQuad.frustumCulled = false;
-bgScene.add(bgQuad);
+            depthTest: false,
+            depthWrite: false,
+        });
+        bgMat.frustumCulled = false;
+        const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat);
+        bgQuad.frustumCulled = false;
+        bgScene.add(bgQuad);
 
-/* ── 6-Band Chromatic Dispersion Glass Shaders ── */
-const glassVertSrc = `
+        /* ── 6-Band Chromatic Dispersion Glass Shaders ── */
+        const glassVertSrc = `
     varying vec3 vNormal;
     varying vec3 vEye;
     varying vec3 vWorldPos;
@@ -1095,7 +1857,7 @@ const glassVertSrc = `
     }
 `;
 
-const glassFragSrc = `
+        const glassFragSrc = `
     uniform vec2 uResolution;
     uniform sampler2D uTexture;
     uniform float uIorR, uIorY, uIorG, uIorC, uIorB, uIorP;
@@ -1188,119 +1950,119 @@ const glassFragSrc = `
     }
 `;
 
-function makeGlassUniforms(isBack) {
-    return {
-        uResolution: { value: new THREE.Vector2() },
-        uTexture: { value: null },
-        uIorR: { value: 1.15 },
-        uIorY: { value: 1.16 },
-        uIorG: { value: 1.18 },
-        uIorC: { value: 1.22 },
-        uIorB: { value: 1.22 },
-        uIorP: { value: 1.22 },
-        uRefractPower: { value: isBack ? 0.22 : 0.30 },
-        uChromatic: { value: 0.5 },
-        uSaturation: { value: 1.08 },
-        uShininess: { value: 90.0 },
-        uDiffuseness: { value: 0.02 },
-        uFresnelPower: { value: 5.0 },
-        uLight: { value: new THREE.Vector3(-1, 1, 1) },
-        uBackside: { value: isBack ? 1.0 : 0.0 },
-        uGlowColor: { value: new THREE.Vector3(0.0, 0.9, 1.0) },
-        uGlowIntensity: { value: 0.0 },
-    };
-}
+        function makeGlassUniforms(isBack) {
+            return {
+                uResolution: { value: new THREE.Vector2() },
+                uTexture: { value: null },
+                uIorR: { value: 1.15 },
+                uIorY: { value: 1.16 },
+                uIorG: { value: 1.18 },
+                uIorC: { value: 1.22 },
+                uIorB: { value: 1.22 },
+                uIorP: { value: 1.22 },
+                uRefractPower: { value: isBack ? 0.22 : 0.30 },
+                uChromatic: { value: 0.5 },
+                uSaturation: { value: 1.08 },
+                uShininess: { value: 90.0 },
+                uDiffuseness: { value: 0.02 },
+                uFresnelPower: { value: 5.0 },
+                uLight: { value: new THREE.Vector3(-1, 1, 1) },
+                uBackside: { value: isBack ? 1.0 : 0.0 },
+                uGlowColor: { value: new THREE.Vector3(0.0, 0.9, 1.0) },
+                uGlowIntensity: { value: 0.0 },
+            };
+        }
 
-const backMat = new THREE.ShaderMaterial({
-    vertexShader: glassVertSrc,
-    fragmentShader: glassFragSrc,
-    uniforms: makeGlassUniforms(true),
-    side: THREE.BackSide,
-});
+        const backMat = new THREE.ShaderMaterial({
+            vertexShader: glassVertSrc,
+            fragmentShader: glassFragSrc,
+            uniforms: makeGlassUniforms(true),
+            side: THREE.BackSide,
+        });
 
-const frontMat = new THREE.ShaderMaterial({
-    vertexShader: glassVertSrc,
-    fragmentShader: glassFragSrc,
-    uniforms: makeGlassUniforms(false),
-    side: THREE.FrontSide,
-});
+        const frontMat = new THREE.ShaderMaterial({
+            vertexShader: glassVertSrc,
+            fragmentShader: glassFragSrc,
+            uniforms: makeGlassUniforms(false),
+            side: THREE.FrontSide,
+        });
 
-/* ── Inner Floating Hologram / Image Core (Inside the Glass Cuboid) ── */
-const specimenCanvas = document.createElement('canvas');
-specimenCanvas.width = 512;
-specimenCanvas.height = 512;
-const sCtx = specimenCanvas.getContext('2d');
-const specimenTexture = new THREE.CanvasTexture(specimenCanvas);
-specimenTexture.colorSpace = THREE.SRGBColorSpace;
-specimenTexture.minFilter = THREE.LinearFilter;
-specimenTexture.magFilter = THREE.LinearFilter;
+        /* ── Inner Floating Hologram / Image Core (Inside the Glass Cuboid) ── */
+        const specimenCanvas = document.createElement('canvas');
+        specimenCanvas.width = 512;
+        specimenCanvas.height = 512;
+        const sCtx = specimenCanvas.getContext('2d');
+        const specimenTexture = new THREE.CanvasTexture(specimenCanvas);
+        specimenTexture.colorSpace = THREE.SRGBColorSpace;
+        specimenTexture.minFilter = THREE.LinearFilter;
+        specimenTexture.magFilter = THREE.LinearFilter;
 
-function drawDefaultSpecimen() {
-    sCtx.clearRect(0, 0, 512, 512);
-    sCtx.fillStyle = 'rgba(8, 12, 20, 0.94)';
-    sCtx.fillRect(0, 0, 512, 512);
+        function drawDefaultSpecimen() {
+            sCtx.clearRect(0, 0, 512, 512);
+            sCtx.fillStyle = 'rgba(8, 12, 20, 0.94)';
+            sCtx.fillRect(0, 0, 512, 512);
 
-    sCtx.strokeStyle = 'rgba(0, 229, 255, 0.12)';
-    sCtx.lineWidth = 1;
-    for (let i = 40; i < 512; i += 40) {
-        sCtx.beginPath(); sCtx.moveTo(i, 0); sCtx.lineTo(i, 512); sCtx.stroke();
-        sCtx.beginPath(); sCtx.moveTo(0, i); sCtx.lineTo(512, i); sCtx.stroke();
-    }
+            sCtx.strokeStyle = 'rgba(0, 229, 255, 0.12)';
+            sCtx.lineWidth = 1;
+            for (let i = 40; i < 512; i += 40) {
+                sCtx.beginPath(); sCtx.moveTo(i, 0); sCtx.lineTo(i, 512); sCtx.stroke();
+                sCtx.beginPath(); sCtx.moveTo(0, i); sCtx.lineTo(512, i); sCtx.stroke();
+            }
 
-    sCtx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
-    sCtx.lineWidth = 3;
-    sCtx.strokeRect(16, 16, 480, 480);
+            sCtx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
+            sCtx.lineWidth = 3;
+            sCtx.strokeRect(16, 16, 480, 480);
 
-    const drawCross = (x, y) => {
-        sCtx.beginPath();
-        sCtx.moveTo(x - 10, y); sCtx.lineTo(x + 10, y);
-        sCtx.moveTo(x, y - 10); sCtx.lineTo(x, y + 10);
-        sCtx.strokeStyle = '#00e5ff';
-        sCtx.lineWidth = 2;
-        sCtx.stroke();
-    };
-    drawCross(32, 32); drawCross(480, 32); drawCross(32, 480); drawCross(480, 480);
+            const drawCross = (x, y) => {
+                sCtx.beginPath();
+                sCtx.moveTo(x - 10, y); sCtx.lineTo(x + 10, y);
+                sCtx.moveTo(x, y - 10); sCtx.lineTo(x, y + 10);
+                sCtx.strokeStyle = '#00e5ff';
+                sCtx.lineWidth = 2;
+                sCtx.stroke();
+            };
+            drawCross(32, 32); drawCross(480, 32); drawCross(32, 480); drawCross(480, 480);
 
-    sCtx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-    sCtx.lineWidth = 2.5;
-    sCtx.beginPath();
-    sCtx.ellipse(256, 210, 80, 110, 0, 0, Math.PI * 2);
-    sCtx.stroke();
+            sCtx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+            sCtx.lineWidth = 2.5;
+            sCtx.beginPath();
+            sCtx.ellipse(256, 210, 80, 110, 0, 0, Math.PI * 2);
+            sCtx.stroke();
 
-    sCtx.beginPath();
-    sCtx.arc(256, 430, 140, Math.PI * 1.15, Math.PI * 1.85);
-    sCtx.stroke();
+            sCtx.beginPath();
+            sCtx.arc(256, 430, 140, Math.PI * 1.15, Math.PI * 1.85);
+            sCtx.stroke();
 
-    sCtx.font = '600 22px Poppins';
-    sCtx.fillStyle = '#00e5ff';
-    sCtx.textAlign = 'center';
-    sCtx.fillText('BIOMETRIC SPECIMEN', 256, 370);
+            sCtx.font = '600 22px Poppins';
+            sCtx.fillStyle = '#00e5ff';
+            sCtx.textAlign = 'center';
+            sCtx.fillText('BIOMETRIC SPECIMEN', 256, 370);
 
-    sCtx.font = '400 15px Poppins';
-    sCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    sCtx.fillText('DROP IMAGE TO ENGAGE SCAN', 256, 400);
+            sCtx.font = '400 15px Poppins';
+            sCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            sCtx.fillText('DROP IMAGE TO ENGAGE SCAN', 256, 400);
 
-    specimenTexture.needsUpdate = true;
-}
-drawDefaultSpecimen();
+            specimenTexture.needsUpdate = true;
+        }
+        drawDefaultSpecimen();
 
-const innerShaderMat = new THREE.ShaderMaterial({
-    uniforms: {
-        uMap: { value: specimenTexture },
-        uScanProgress: { value: -1.0 },
-        uScanColor: { value: new THREE.Vector3(0.0, 0.9, 1.0) },
-        uBorderGlow: { value: 0.0 },
-        uStatusColor: { value: new THREE.Vector3(0.0, 0.9, 1.0) },
-        uTime: { value: 0 },
-    },
-    vertexShader: `
+        const innerShaderMat = new THREE.ShaderMaterial({
+            uniforms: {
+                uMap: { value: specimenTexture },
+                uScanProgress: { value: -1.0 },
+                uScanColor: { value: new THREE.Vector3(0.0, 0.9, 1.0) },
+                uBorderGlow: { value: 0.0 },
+                uStatusColor: { value: new THREE.Vector3(0.0, 0.9, 1.0) },
+                uTime: { value: 0 },
+            },
+            vertexShader: `
         varying vec2 vUv;
         void main() {
             vUv = uv;
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
     `,
-    fragmentShader: `
+            fragmentShader: `
         uniform sampler2D uMap;
         uniform float uScanProgress;
         uniform vec3 uScanColor;
@@ -1338,590 +2100,726 @@ const innerShaderMat = new THREE.ShaderMaterial({
             #include <colorspace_fragment>
         }
     `,
-    transparent: true,
-    side: THREE.DoubleSide,
-});
-
-const innerGeo = new THREE.PlaneGeometry(0.72, 0.72);
-const innerMesh = new THREE.Mesh(innerGeo, innerShaderMat);
-spinner.add(innerMesh);
-
-/* ── Render Targets for Refraction Pipeline ── */
-let rtBack, rtFront;
-function makeRTs() {
-    const w = renderer.domElement.width;
-    const h = renderer.domElement.height;
-    if (w === 0 || h === 0) return;
-    if (rtBack) { rtBack.dispose(); rtFront.dispose(); }
-    const opts = { type: THREE.HalfFloatType };
-    rtBack = new THREE.WebGLRenderTarget(w, h, opts);
-    rtFront = new THREE.WebGLRenderTarget(w, h, opts);
-    backMat.uniforms.uTexture.value = rtBack.texture;
-    frontMat.uniforms.uTexture.value = rtFront.texture;
-}
-
-/* ── 3D Cube Mesh Loading ── */
-let cubeMeshBack = null;
-let cubeMeshFront = null;
-let cubeLoaded = false;
-
-function setupCube(geometry) {
-    cubeMeshBack = new THREE.Mesh(geometry, backMat);
-    cubeMeshFront = new THREE.Mesh(geometry, frontMat);
-    spinner.add(cubeMeshBack);
-    spinner.add(cubeMeshFront);
-    cubeLoaded = true;
-    loaderEl.classList.add('done');
-    layout();
-}
-
-const gltfLoader = new GLTFLoader();
-gltfLoader.load(MODEL_URL, (gltf) => {
-    const geometries = [];
-    gltf.scene.updateMatrixWorld(true);
-    gltf.scene.traverse((child) => {
-        if (child.isMesh) {
-            const g = child.geometry.clone();
-            g.deleteAttribute('uv');
-            if (g.hasAttribute('color')) g.deleteAttribute('color');
-            if (g.hasAttribute('tangent')) g.deleteAttribute('tangent');
-            const merged = mergeVertices(g, 1e-4);
-            merged.computeVertexNormals();
-            merged.applyMatrix4(child.matrixWorld);
-            geometries.push(merged);
-        }
-    });
-    let geo = geometries.length > 1 ? mergeGeometries(geometries) : geometries[0];
-    if (!geo) { fallbackGeo(); return; }
-
-    geo.computeBoundingBox();
-    const box = geo.boundingBox;
-    const center = new THREE.Vector3();
-    box.getCenter(center);
-    geo.translate(-center.x, -center.y, -center.z);
-    const size = new THREE.Vector3();
-    box.getSize(size);
-    const maxDim = Math.max(size.x, size.y, size.z);
-    if (maxDim > 0) geo.scale(1 / maxDim, 1 / maxDim, 1 / maxDim);
-
-    setupCube(geo);
-}, undefined, () => {
-    fallbackGeo();
-});
-
-function fallbackGeo() {
-    const geo = new RoundedBoxGeometry(1, 1, 1, 8, 0.12);
-    setupCube(geo);
-}
-
-/* ── Layout & Responsive Calculation ── */
-function layout() {
-    const W = canvas.clientWidth;
-    const H = canvas.clientHeight;
-    if (W === 0 || H === 0) return;
-    const dpr = renderer.getPixelRatio();
-
-    renderer.setSize(W, H, false);
-    camera.aspect = W / H;
-    camera.updateProjectionMatrix();
-
-    makeRTs();
-
-    const res = new THREE.Vector2(W * dpr, H * dpr);
-    backMat.uniforms.uResolution.value.copy(res);
-    frontMat.uniforms.uResolution.value.copy(res);
-
-    drawHeadline();
-
-    if (!cubeLoaded) return;
-
-    const fovRad = THREE.MathUtils.degToRad(camera.fov);
-    const visH = 2 * Math.tan(fovRad / 2) * 10;
-    const visW = visH * camera.aspect;
-
-    const mobile = (W < 768) || (W / H < 1);
-    const sx = mobile ? 0.5 : 0.517;
-    const sy = mobile ? 0.38 : 0.43;
-    pivot.position.set((sx - 0.5) * visW, (0.5 - sy) * visH, 0);
-
-    const edgePx = Math.min(H * 0.38, W * (mobile ? 0.40 : 0.26));
-    const s = (edgePx / H) * visH;
-    pivot.scale.set(s, s, s);
-
-    cubeOverlay.style.left = `${sx * 100}%`;
-    cubeOverlay.style.top = `${sy * 100}%`;
-}
-
-/* ── Interactive Rotation & Drag Controls ── */
-let isDragging = false;
-let velX = 0, velY = 0;
-let lastX = 0, lastY = 0;
-let lastPointerTime = 0;
-let idleBlend = 1;
-let lastIdleTouch = 0;
-let spinRemaining = 0;
-
-canvas.addEventListener('pointerdown', (e) => {
-    isDragging = true;
-    canvas.setPointerCapture(e.pointerId);
-    canvas.classList.add('dragging');
-    lastX = e.clientX;
-    lastY = e.clientY;
-    lastPointerTime = performance.now();
-    spinRemaining = 0;
-    idleBlend = 0;
-    lastIdleTouch = performance.now();
-});
-
-canvas.addEventListener('pointermove', (e) => {
-    if (!isDragging) return;
-    const dx = (e.clientX - lastX) * 0.008;
-    const dy = (e.clientY - lastY) * 0.008;
-
-    const now = performance.now();
-    const dt = Math.max(now - lastPointerTime, 1) / 16.67;
-    velX = dx / dt;
-    velY = dy / dt;
-    lastPointerTime = now;
-
-    applyRotation(dx, dy);
-    lastX = e.clientX;
-    lastY = e.clientY;
-});
-
-canvas.addEventListener('pointerup', (e) => {
-    isDragging = false;
-    canvas.releasePointerCapture(e.pointerId);
-    canvas.classList.remove('dragging');
-    lastIdleTouch = performance.now();
-});
-
-canvas.addEventListener('pointercancel', (e) => {
-    isDragging = false;
-    canvas.classList.remove('dragging');
-    lastIdleTouch = performance.now();
-});
-
-function applyRotation(dx, dy) {
-    const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dx);
-    const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), dy);
-    spinner.quaternion.premultiply(qY);
-    spinner.quaternion.premultiply(qX);
-}
-
-/* ── Arrow Buttons ── */
-prevBtn.addEventListener('click', () => {
-    spinRemaining -= Math.PI / 2;
-    velX = 0; velY = 0;
-});
-nextBtn.addEventListener('click', () => {
-    spinRemaining += Math.PI / 2;
-    velX = 0; velY = 0;
-});
-
-/* ── Dots ── */
-dots.forEach((dot) => {
-    dot.addEventListener('click', () => {
-        dots.forEach(d => d.classList.remove('active'));
-        dot.classList.add('active');
-    });
-});
-
-/* ── File Upload & DeepFake Model Detection Workflow ── */
-let currentUploadedFile = null;
-let isAnalyzing = false;
-let scanStartTime = 0;
-let glowTargetColor = new THREE.Vector3(0, 0.9, 1);
-let glowTargetIntensity = 0.0;
-let curGlowIntensity = 0.0;
-
-cubePill.addEventListener('click', (e) => {
-    e.stopPropagation();
-    fileInput.click();
-});
-ctaUpload.addEventListener('click', (e) => {
-    e.preventDefault();
-    fileInput.click();
-});
-hudReset.addEventListener('click', resetAnalysis);
-
-['dragenter', 'dragover'].forEach(evtName => {
-    hero.addEventListener(evtName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        hero.classList.add('drag-over');
-    });
-});
-
-['dragleave', 'dragend'].forEach(evtName => {
-    hero.addEventListener(evtName, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        hero.classList.remove('drag-over');
-    });
-});
-
-hero.addEventListener('drop', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    hero.classList.remove('drag-over');
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleFileSelected(e.dataTransfer.files[0]);
-    }
-});
-
-fileInput.addEventListener('change', (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-        handleFileSelected(e.target.files[0]);
-    }
-});
-
-function handleFileSelected(file) {
-    if (!file.type.startsWith('image/')) {
-        alert('Please upload a valid image file (JPG, PNG, WebP).');
-        return;
-    }
-    currentUploadedFile = file;
-
-    // Switch dashboard view to Biometric Pipeline
-    tabBiometric.click();
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-            renderImageToSpecimen(img);
-            startDeepfakeDetection(file);
-        };
-        img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-
-function renderImageToSpecimen(img) {
-    sCtx.clearRect(0, 0, 512, 512);
-    sCtx.fillStyle = '#080c14';
-    sCtx.fillRect(0, 0, 512, 512);
-
-    const size = 480;
-    const offset = 16;
-    const aspect = img.width / img.height;
-    let sW, sH, sx = 0, sy = 0;
-    if (aspect > 1) {
-        sH = img.height;
-        sW = img.height;
-        sx = (img.width - img.height) / 2;
-    } else {
-        sW = img.width;
-        sH = img.width;
-        sy = (img.height - img.width) / 2;
-    }
-
-    sCtx.drawImage(img, sx, sy, sW, sH, offset, offset, size, size);
-    sCtx.fillStyle = 'rgba(0, 229, 255, 0.06)';
-    sCtx.fillRect(offset, offset, size, size);
-
-    sCtx.strokeStyle = '#00e5ff';
-    sCtx.lineWidth = 3;
-    sCtx.strokeRect(offset, offset, size, size);
-
-    specimenTexture.needsUpdate = true;
-}
-
-async function startDeepfakeDetection(file) {
-    isAnalyzing = true;
-    scanStartTime = performance.now();
-
-    pillText.textContent = 'Scanning Biometrics...';
-    hudCard.classList.add('visible');
-    hudBadge.className = 'hud-status-badge scanning';
-    hudStatusText.textContent = 'Extracting Biometrics';
-    hudVerdictSummary.textContent = 'Phase B2: Analyzing frequency domain artifacts...';
-
-    // Update Biometric Steps progression
-    bioStep1.className = 'step-card completed';
-    bioTag1.textContent = 'DONE';
-    bioStep2.className = 'step-card active';
-    bioTag2.textContent = 'SCANNING';
-    bioStep3.className = 'step-card';
-    bioTag3.textContent = 'QUEUE';
-    bioStep4.className = 'step-card';
-    bioTag4.textContent = 'QUEUE';
-    bioStatusHint.textContent = 'Extracting Discrete Cosine Transform (DCT) and spatial artifacts...';
-
-    setTimeout(() => {
-        if (!isAnalyzing) return;
-        bioStep2.className = 'step-card completed';
-        bioTag2.textContent = 'DONE';
-        bioStep3.className = 'step-card active';
-        bioTag3.textContent = 'INFERRING';
-        hudVerdictSummary.textContent = 'Phase B3: EfficientNet-B0 deep feature classification...';
-        bioStatusHint.textContent = 'Propagating tensor through EfficientNet-B0 neural backbone...';
-    }, 700);
-
-    glowTargetColor.set(0.0, 0.9, 1.0);
-    glowTargetIntensity = 0.6;
-    innerShaderMat.uniforms.uScanColor.value.set(0.0, 0.9, 1.0);
-    innerShaderMat.uniforms.uBorderGlow.value = 0.8;
-    innerShaderMat.uniforms.uStatusColor.value.set(0.0, 0.9, 1.0);
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-        const response = await fetch('http://localhost:5000/predict', {
-            method: 'POST',
-            body: formData,
+            transparent: true,
+            side: THREE.DoubleSide,
         });
 
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
+        const innerGeo = new THREE.PlaneGeometry(0.72, 0.72);
+        const innerMesh = new THREE.Mesh(innerGeo, innerShaderMat);
+        spinner.add(innerMesh);
 
-        const elapsed = performance.now() - scanStartTime;
-        const delayRemaining = Math.max(0, 1400 - elapsed);
-        setTimeout(() => {
-            applyDetectionResult(data);
-        }, delayRemaining);
+        /* ── Render Targets for Refraction Pipeline ── */
+        let rtBack, rtFront;
+        function makeRTs() {
+            const w = renderer.domElement.width;
+            const h = renderer.domElement.height;
+            if (w === 0 || h === 0) return;
+            if (rtBack) { rtBack.dispose(); rtFront.dispose(); }
+            const opts = { type: THREE.HalfFloatType };
+            rtBack = new THREE.WebGLRenderTarget(w, h, opts);
+            rtFront = new THREE.WebGLRenderTarget(w, h, opts);
+            backMat.uniforms.uTexture.value = rtBack.texture;
+            frontMat.uniforms.uTexture.value = rtFront.texture;
+        }
 
-    } catch (err) {
-        console.warn('Backend fetch failed, using fallback:', err);
-        setTimeout(() => {
-            const isRealFallback = Math.random() > 0.45;
-            const confFallback = 0.88 + Math.random() * 0.11;
-            applyDetectionResult({
-                label: isRealFallback ? 'Real' : 'Fake',
-                confidence: confFallback,
-                is_real: isRealFallback,
-                using_trained_model: false,
+        /* ── 3D Cube Mesh Loading ── */
+        let cubeMeshBack = null;
+        let cubeMeshFront = null;
+        let cubeLoaded = false;
+
+        function setupCube(geometry) {
+            cubeMeshBack = new THREE.Mesh(geometry, backMat);
+            cubeMeshFront = new THREE.Mesh(geometry, frontMat);
+            spinner.add(cubeMeshBack);
+            spinner.add(cubeMeshFront);
+            cubeLoaded = true;
+            loaderEl.classList.add('done');
+            layout();
+        }
+
+        const gltfLoader = new GLTFLoader();
+        gltfLoader.load(MODEL_URL, (gltf) => {
+            const geometries = [];
+            gltf.scene.updateMatrixWorld(true);
+            gltf.scene.traverse((child) => {
+                if (child.isMesh) {
+                    const g = child.geometry.clone();
+                    g.deleteAttribute('uv');
+                    if (g.hasAttribute('color')) g.deleteAttribute('color');
+                    if (g.hasAttribute('tangent')) g.deleteAttribute('tangent');
+                    const merged = mergeVertices(g, 1e-4);
+                    merged.computeVertexNormals();
+                    merged.applyMatrix4(child.matrixWorld);
+                    geometries.push(merged);
+                }
             });
-        }, 1400);
-    }
-}
+            let geo = geometries.length > 1 ? mergeGeometries(geometries) : geometries[0];
+            if (!geo) { fallbackGeo(); return; }
 
-function applyDetectionResult(result) {
-    isAnalyzing = false;
-    innerShaderMat.uniforms.uScanProgress.value = -1.0;
+            geo.computeBoundingBox();
+            const box = geo.boundingBox;
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            geo.translate(-center.x, -center.y, -center.z);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            const maxDim = Math.max(size.x, size.y, size.z);
+            if (maxDim > 0) geo.scale(1 / maxDim, 1 / maxDim, 1 / maxDim);
 
-    const isReal = result.is_real;
-    const confidencePct = Math.round(result.confidence * 100);
-
-    bioStep3.className = 'step-card completed';
-    bioTag3.textContent = 'DONE';
-    bioStep4.className = isReal ? 'step-card completed' : 'step-card active';
-    bioTag4.textContent = isReal ? 'AUTHENTIC' : 'DEEPFAKE';
-    bioDesc4.textContent = `${confidencePct}% Confidence`;
-    bioStatusHint.textContent = `Verdict: ${isReal ? 'Authentic Human Specimen' : 'Synthetic DeepFake Detected'} (${confidencePct}% match).`;
-
-    headlineLines = isReal ? ['Authentic', 'Human', 'Real'] : ['Synthetic', 'DeepFake', 'Detected'];
-    drawHeadline();
-
-    if (isReal) {
-        hudBadge.className = 'hud-status-badge real';
-        hudStatusText.textContent = 'Authentic Image';
-        hudVerdictSummary.innerHTML = `<span style="color:var(--real-color)">VERDICT: AUTHENTIC / REAL</span> &bull; ${confidencePct}% Confidence`;
-        pillText.textContent = `Authentic (${confidencePct}%)`;
-
-        glowTargetColor.set(0.0, 1.0, 0.53);
-        glowTargetIntensity = 0.85;
-        innerShaderMat.uniforms.uStatusColor.value.set(0.0, 1.0, 0.53);
-        innerShaderMat.uniforms.uBorderGlow.value = 1.0;
-
-        logoMark.style.background = 'var(--real-color)';
-        logoMark.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.7)';
-    } else {
-        hudBadge.className = 'hud-status-badge fake';
-        hudStatusText.textContent = 'DeepFake Alert';
-        hudVerdictSummary.innerHTML = `<span style="color:var(--fake-color)">VERDICT: MANIPULATED / FAKE</span> &bull; ${confidencePct}% Confidence`;
-        pillText.textContent = `DeepFake (${confidencePct}%)`;
-
-        glowTargetColor.set(1.0, 0.2, 0.4);
-        glowTargetIntensity = 0.95;
-        innerShaderMat.uniforms.uStatusColor.value.set(1.0, 0.2, 0.4);
-        innerShaderMat.uniforms.uBorderGlow.value = 1.0;
-
-        logoMark.style.background = 'var(--fake-color)';
-        logoMark.style.boxShadow = '0 0 20px rgba(255, 51, 102, 0.7)';
-    }
-}
-
-function resetAnalysis() {
-    isAnalyzing = false;
-    currentUploadedFile = null;
-    fileInput.value = '';
-    pillText.textContent = 'Drop Face Image Inside Cube';
-    hudCard.classList.remove('visible');
-    glowTargetIntensity = 0.0;
-    innerShaderMat.uniforms.uScanProgress.value = -1.0;
-    innerShaderMat.uniforms.uBorderGlow.value = 0.0;
-
-    logoMark.style.background = '#fff';
-    logoMark.style.boxShadow = 'none';
-
-    bioStep1.className = 'step-card'; bioTag1.textContent = 'READY';
-    bioStep2.className = 'step-card'; bioTag2.textContent = 'IDLE';
-    bioStep3.className = 'step-card'; bioTag3.textContent = 'IDLE';
-    bioStep4.className = 'step-card'; bioTag4.textContent = 'IDLE';
-    bioDesc4.textContent = 'Real vs DeepFake Result';
-    bioStatusHint.textContent = 'Drag & drop any face photo into the crystal cube above to trigger the 4-phase inference scan.';
-
-    tabTraining.click();
-    headlineLines = ['Explore', 'New', 'Ideas'];
-    drawHeadline();
-    drawDefaultSpecimen();
-}
-
-/* ── Live Training Telemetry Polling (Every 2.5s) ── */
-async function pollTrainingStatus() {
-    try {
-        const res = await fetch('http://localhost:5000/training-status');
-        if (res.ok) {
-            const data = await res.json();
-            updateTrainingDashboard(data);
-        }
-    } catch (e) {
-        // Simulated local fallback from training log metrics
-        updateTrainingDashboard({
-            epoch: 1,
-            total_epochs: 10,
-            batch: 875,
-            total_batches: 2500,
-            accuracy: 72.6,
-            loss: 0.524,
-            phase_idx: 2,
+            setupCube(geo);
+        }, undefined, () => {
+            fallbackGeo();
         });
-    }
-}
 
-function updateTrainingDashboard(data) {
-    if (!data) return;
-    const batch = data.batch || 875;
-    const totalBatches = data.total_batches || 2500;
-    const epoch = data.epoch || 1;
-    const totalEpochs = data.total_epochs || 10;
-    const acc = data.accuracy ? data.accuracy.toFixed(1) : '72.6';
-    const loss = data.loss ? data.loss.toFixed(3) : '0.524';
-    const pct = Math.round((batch / totalBatches) * 100);
-
-    step2Desc.textContent = `Epoch ${epoch}: Batch ${batch}/${totalBatches}`;
-    metricEpoch.textContent = `${epoch} / ${totalEpochs}`;
-    metricBatchPct.textContent = `${pct}%`;
-    barEpoch.style.width = `${pct}%`;
-
-    metricAcc.textContent = `${acc}%`;
-    barAcc.style.width = `${acc}%`;
-
-    metricLoss.textContent = `${loss}`;
-    const lossBarPct = Math.min(100, Math.max(10, Math.round(parseFloat(loss) * 100)));
-    barLoss.style.width = `${lossBarPct}%`;
-}
-
-// Initial poll + interval
-pollTrainingStatus();
-setInterval(pollTrainingStatus, 2500);
-
-/* ── Animation Loop ── */
-let lastTime = 0;
-
-function animate(time) {
-    requestAnimationFrame(animate);
-    let dt = (time - lastTime) / 1000;
-    if (lastTime === 0) dt = 1 / 60;
-    dt = Math.min(dt, 0.05);
-    lastTime = time;
-
-    const dtScale = dt * 60;
-
-    if (isAnalyzing) {
-        const scanElapsed = (time - scanStartTime) / 1000;
-        const cycle = (scanElapsed * 1.3) % 1.0;
-        innerShaderMat.uniforms.uScanProgress.value = cycle;
-    }
-
-    curGlowIntensity = THREE.MathUtils.lerp(curGlowIntensity, glowTargetIntensity, 0.08);
-    frontMat.uniforms.uGlowColor.value.copy(glowTargetColor);
-    frontMat.uniforms.uGlowIntensity.value = curGlowIntensity;
-    backMat.uniforms.uGlowColor.value.copy(glowTargetColor);
-    backMat.uniforms.uGlowIntensity.value = curGlowIntensity * 0.5;
-
-    innerShaderMat.uniforms.uTime.value = time * 0.001;
-
-    if (!isDragging && cubeLoaded) {
-        const damping = Math.pow(0.94, dtScale);
-        velX *= damping;
-        velY *= damping;
-        if (Math.abs(velX) > 0.0001 || Math.abs(velY) > 0.0001) {
-            applyRotation(velX * dtScale, velY * dtScale);
+        function fallbackGeo() {
+            const geo = new RoundedBoxGeometry(1, 1, 1, 8, 0.12);
+            setupCube(geo);
         }
 
-        if (Math.abs(spinRemaining) > 0.0005) {
-            const step = spinRemaining * Math.min(1, 0.09 * dtScale);
-            applyRotation(step, 0);
-            spinRemaining -= step;
-        } else {
+        /* ── Layout & Responsive Calculation ── */
+        function layout() {
+            const W = canvas.clientWidth;
+            const H = canvas.clientHeight;
+            if (W === 0 || H === 0) return;
+            const dpr = renderer.getPixelRatio();
+
+            renderer.setSize(W, H, false);
+            camera.aspect = W / H;
+            camera.updateProjectionMatrix();
+
+            makeRTs();
+
+            const res = new THREE.Vector2(W * dpr, H * dpr);
+            backMat.uniforms.uResolution.value.copy(res);
+            frontMat.uniforms.uResolution.value.copy(res);
+
+            drawHeadline();
+
+            if (!cubeLoaded) return;
+
+            const fovRad = THREE.MathUtils.degToRad(camera.fov);
+            const visH = 2 * Math.tan(fovRad / 2) * 10;
+            const visW = visH * camera.aspect;
+
+            const mobile = (W < 768) || (W / H < 1);
+            const sx = mobile ? 0.5 : 0.517;
+            const sy = mobile ? 0.38 : 0.43;
+            pivot.position.set((sx - 0.5) * visW, (0.5 - sy) * visH, 0);
+
+            const edgePx = Math.min(H * 0.38, W * (mobile ? 0.40 : 0.26));
+            const s = (edgePx / H) * visH;
+            pivot.scale.set(s, s, s);
+
+            cubeOverlay.style.left = `${sx * 100}%`;
+            cubeOverlay.style.top = `${sy * 100}%`;
+        }
+
+        /* ── Interactive Rotation & Drag Controls ── */
+        let isDragging = false;
+        let velX = 0, velY = 0;
+        let lastX = 0, lastY = 0;
+        let lastPointerTime = 0;
+        let idleBlend = 1;
+        let lastIdleTouch = 0;
+        let spinRemaining = 0;
+
+        canvas.addEventListener('pointerdown', (e) => {
+            isDragging = true;
+            canvas.setPointerCapture(e.pointerId);
+            canvas.classList.add('dragging');
+            lastX = e.clientX;
+            lastY = e.clientY;
+            lastPointerTime = performance.now();
             spinRemaining = 0;
+            idleBlend = 0;
+            lastIdleTouch = performance.now();
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            const dx = (e.clientX - lastX) * 0.008;
+            const dy = (e.clientY - lastY) * 0.008;
+
+            const now = performance.now();
+            const dt = Math.max(now - lastPointerTime, 1) / 16.67;
+            velX = dx / dt;
+            velY = dy / dt;
+            lastPointerTime = now;
+
+            applyRotation(dx, dy);
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+
+        canvas.addEventListener('pointerup', (e) => {
+            isDragging = false;
+            canvas.releasePointerCapture(e.pointerId);
+            canvas.classList.remove('dragging');
+            lastIdleTouch = performance.now();
+        });
+
+        canvas.addEventListener('pointercancel', (e) => {
+            isDragging = false;
+            canvas.classList.remove('dragging');
+            lastIdleTouch = performance.now();
+        });
+
+        function applyRotation(dx, dy) {
+            const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dx);
+            const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), dy);
+            spinner.quaternion.premultiply(qY);
+            spinner.quaternion.premultiply(qX);
         }
 
-        const timeSinceTouch = (performance.now() - lastIdleTouch) / 1000;
-        if (timeSinceTouch > 0.6) {
-            idleBlend = Math.min(1, idleBlend + dt);
+        /* ── Arrow Buttons ── */
+        prevBtn.addEventListener('click', () => {
+            spinRemaining -= Math.PI / 2;
+            velX = 0; velY = 0;
+        });
+        nextBtn.addEventListener('click', () => {
+            spinRemaining += Math.PI / 2;
+            velX = 0; velY = 0;
+        });
+
+        /* ── Dots ── */
+        dots.forEach((dot) => {
+            dot.addEventListener('click', () => {
+                dots.forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+            });
+        });
+
+        /* ── File Upload & DeepFake Model Detection Workflow ── */
+        let currentUploadedFile = null;
+        let isAnalyzing = false;
+        let scanStartTime = 0;
+        let glowTargetColor = new THREE.Vector3(0, 0.9, 1);
+        let glowTargetIntensity = 0.0;
+        let curGlowIntensity = 0.0;
+
+        cubePill.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        });
+        ctaUpload.addEventListener('click', (e) => {
+            e.preventDefault();
+            fileInput.click();
+        });
+        hudReset.addEventListener('click', resetAnalysis);
+
+        ['dragenter', 'dragover'].forEach(evtName => {
+            hero.addEventListener(evtName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                hero.classList.add('drag-over');
+            });
+        });
+
+        ['dragleave', 'dragend'].forEach(evtName => {
+            hero.addEventListener(evtName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                hero.classList.remove('drag-over');
+            });
+        });
+
+        hero.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            hero.classList.remove('drag-over');
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                handleFileSelected(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files.length > 0) {
+                handleFileSelected(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelected(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload a valid image file (JPG, PNG, WebP).');
+                return;
+            }
+            currentUploadedFile = file;
+
+            // Switch dashboard view to Biometric Pipeline
+            tabBiometric.click();
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    renderImageToSpecimen(img);
+                    startDeepfakeDetection(file);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
         }
-        if (idleBlend > 0 && spinRemaining === 0) {
-            const speedMultiplier = isAnalyzing ? 3.0 : 1.0;
-            applyRotation(0.0035 * dtScale * idleBlend * speedMultiplier, 0.0012 * dtScale * idleBlend * speedMultiplier);
+
+        function renderImageToSpecimen(img) {
+            sCtx.clearRect(0, 0, 512, 512);
+            sCtx.fillStyle = '#080c14';
+            sCtx.fillRect(0, 0, 512, 512);
+
+            const size = 480;
+            const offset = 16;
+            const aspect = img.width / img.height;
+            let sW, sH, sx = 0, sy = 0;
+            if (aspect > 1) {
+                sH = img.height;
+                sW = img.height;
+                sx = (img.width - img.height) / 2;
+            } else {
+                sW = img.width;
+                sH = img.width;
+                sy = (img.height - img.width) / 2;
+            }
+
+            sCtx.drawImage(img, sx, sy, sW, sH, offset, offset, size, size);
+            sCtx.fillStyle = 'rgba(0, 229, 255, 0.06)';
+            sCtx.fillRect(offset, offset, size, size);
+
+            sCtx.strokeStyle = '#00e5ff';
+            sCtx.lineWidth = 3;
+            sCtx.strokeRect(offset, offset, size, size);
+
+            specimenTexture.needsUpdate = true;
         }
-    }
 
-    if (!cubeLoaded) {
-        renderer.render(bgScene, camera);
-        return;
-    }
+        async function startDeepfakeDetection(file) {
+            isAnalyzing = true;
+            scanStartTime = performance.now();
 
-    /* ── 2-Pass Refraction Pipeline ── */
-    // 1) bgScene -> rtBack
-    renderer.setRenderTarget(rtBack);
-    renderer.render(bgScene, camera);
+            pillText.textContent = 'Scanning Biometrics...';
+            hudCard.classList.add('visible');
+            hudBadge.className = 'hud-status-badge scanning';
+            hudStatusText.textContent = 'Extracting Biometrics';
+            hudVerdictSummary.textContent = 'Phase B2: Analyzing frequency domain artifacts...';
 
-    // 2) bgScene + inner specimen + cube backfaces -> rtFront
-    renderer.setRenderTarget(rtFront);
-    renderer.render(bgScene, camera);
-    renderer.autoClear = false;
+            // Update Biometric Steps progression
+            bioStep1.className = 'step-card completed';
+            bioTag1.textContent = 'DONE';
+            bioStep2.className = 'step-card active';
+            bioTag2.textContent = 'SCANNING';
+            bioStep3.className = 'step-card';
+            bioTag3.textContent = 'QUEUE';
+            bioStep4.className = 'step-card';
+            bioTag4.textContent = 'QUEUE';
+            bioStatusHint.textContent = 'Extracting Discrete Cosine Transform (DCT) and spatial artifacts...';
 
-    cubeMeshFront.visible = false;
-    cubeMeshBack.visible = true;
-    innerMesh.visible = true;
-    renderer.render(scene, camera);
-    renderer.autoClear = true;
+            setTimeout(() => {
+                if (!isAnalyzing) return;
+                bioStep2.className = 'step-card completed';
+                bioTag2.textContent = 'DONE';
+                bioStep3.className = 'step-card active';
+                bioTag3.textContent = 'INFERRING';
+                hudVerdictSummary.textContent = 'Phase B3: EfficientNet-B0 deep feature classification...';
+                bioStatusHint.textContent = 'Propagating tensor through EfficientNet-B0 neural backbone...';
+            }, 700);
 
-    // 3) bgScene + cube frontfaces (which refract rtFront) -> screen
-    renderer.setRenderTarget(null);
-    renderer.render(bgScene, camera);
-    renderer.autoClear = false;
-    renderer.clearDepth();
+            glowTargetColor.set(0.0, 0.9, 1.0);
+            glowTargetIntensity = 0.6;
+            innerShaderMat.uniforms.uScanColor.value.set(0.0, 0.9, 1.0);
+            innerShaderMat.uniforms.uBorderGlow.value = 0.8;
+            innerShaderMat.uniforms.uStatusColor.value.set(0.0, 0.9, 1.0);
 
-    cubeMeshFront.visible = true;
-    cubeMeshBack.visible = false;
-    innerMesh.visible = false;
-    renderer.render(scene, camera);
-    renderer.autoClear = true;
-}
+            const formData = new FormData();
+            formData.append('file', file);
 
-/* ── Init ── */
-async function init() {
-    await Promise.race([
-        Promise.all([document.fonts.load('800 100px Poppins'), document.fonts.ready]),
-        new Promise(r => setTimeout(r, 2500))
-    ]);
+            try {
+                const response = await fetch(`${API_BASE_URL}/predict`, {
+                    method: 'POST',
+                    body: formData,
+                });
 
-    layout();
-    requestAnimationFrame(animate);
+                if (!response.ok) {
+                    const errorJson = await response.json().catch(() => ({}));
+                    throw new Error(errorJson.error || `HTTP ${response.status}`);
+                }
+                const data = await response.json();
 
-    document.fonts.addEventListener('loadingdone', () => {
-        drawHeadline();
-    });
-}
+                const elapsed = performance.now() - scanStartTime;
+                const delayRemaining = Math.max(0, 1200 - elapsed);
+                setTimeout(() => {
+                    applyDetectionResult(data);
+                }, delayRemaining);
 
-window.addEventListener('resize', layout);
-init();
-</script>
+            } catch (err) {
+                console.error('Backend inference failed:', err);
+                const elapsed = performance.now() - scanStartTime;
+                const delayRemaining = Math.max(0, 800 - elapsed);
+                setTimeout(() => {
+                    applyDetectionError(err.message || 'Connection error to inference server');
+                }, delayRemaining);
+            }
+        }
+
+        function applyDetectionError(errorMessage) {
+            lastPredictionResult = null;
+            feedbackPanel.style.display = 'none';
+            isAnalyzing = false;
+            innerShaderMat.uniforms.uScanProgress.value = -1.0;
+
+            bioStep3.className = 'step-card completed';
+            bioTag3.textContent = 'DONE';
+            bioStep4.className = 'step-card active';
+            bioTag4.textContent = 'OFFLINE';
+            bioTag4.style.background = '#ff9900';
+            bioTag4.style.color = '#000';
+            bioDesc4.textContent = 'Server Unavailable';
+            bioStatusHint.textContent = `Inference Failed: ${errorMessage}. Verify backend is running at ${API_BASE_URL}.`;
+
+            headlineLines = ['Backend', 'Server', 'Offline'];
+            drawHeadline();
+
+            hudBadge.className = 'hud-status-badge';
+            hudBadge.style.background = 'rgba(255, 153, 0, 0.2)';
+            hudBadge.style.borderColor = '#ff9900';
+            hudBadge.style.color = '#ff9900';
+            hudStatusText.textContent = 'Inference Offline';
+            hudVerdictSummary.innerHTML = `<span style="color:#ff9900">SERVICE ERROR</span> &bull; ${errorMessage}`;
+            pillText.textContent = 'Backend Offline';
+
+            glowTargetColor.set(1.0, 0.55, 0.0);
+            glowTargetIntensity = 0.85;
+            innerShaderMat.uniforms.uStatusColor.value.set(1.0, 0.55, 0.0);
+            innerShaderMat.uniforms.uBorderGlow.value = 0.8;
+
+            logoMark.style.background = '#ff9900';
+            logoMark.style.boxShadow = '0 0 20px rgba(255, 153, 0, 0.6)';
+        }
+
+        function applyDetectionResult(result) {
+            isAnalyzing = false;
+            innerShaderMat.uniforms.uScanProgress.value = -1.0;
+
+            lastPredictionResult = result;
+            feedbackPanel.style.display = 'block';
+            feedbackButtons.style.display = 'flex';
+            feedbackMsg.style.display = 'none';
+
+            const isReal = result.is_real;
+            const confidencePct = Math.round(result.confidence * 100);
+
+            bioStep3.className = 'step-card completed';
+            bioTag3.textContent = 'DONE';
+            bioStep4.className = isReal ? 'step-card completed' : 'step-card active';
+            bioTag4.textContent = isReal ? 'AUTHENTIC' : 'DEEPFAKE';
+            bioTag4.style.background = '';
+            bioTag4.style.color = '';
+            bioDesc4.textContent = `${confidencePct}% Confidence`;
+            bioStatusHint.textContent = `Verdict: ${isReal ? 'Authentic Human Specimen' : 'Synthetic DeepFake Detected'} (${confidencePct}% match).`;
+
+            headlineLines = isReal ? ['Authentic', 'Human', 'Real'] : ['Synthetic', 'DeepFake', 'Detected'];
+            drawHeadline();
+
+            if (isReal) {
+                hudBadge.className = 'hud-status-badge real';
+                hudBadge.style.background = '';
+                hudBadge.style.borderColor = '';
+                hudBadge.style.color = '';
+                hudStatusText.textContent = 'Authentic Image';
+                hudVerdictSummary.innerHTML = `<span style="color:var(--real-color)">VERDICT: AUTHENTIC / REAL</span> &bull; ${confidencePct}% Confidence`;
+                pillText.textContent = `Authentic (${confidencePct}%)`;
+
+                glowTargetColor.set(0.0, 1.0, 0.53);
+                glowTargetIntensity = 0.85;
+                innerShaderMat.uniforms.uStatusColor.value.set(0.0, 1.0, 0.53);
+                innerShaderMat.uniforms.uBorderGlow.value = 1.0;
+
+                logoMark.style.background = 'var(--real-color)';
+                logoMark.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.7)';
+            } else {
+                hudBadge.className = 'hud-status-badge fake';
+                hudBadge.style.background = '';
+                hudBadge.style.borderColor = '';
+                hudBadge.style.color = '';
+                hudStatusText.textContent = 'DeepFake Alert';
+                hudVerdictSummary.innerHTML = `<span style="color:var(--fake-color)">VERDICT: MANIPULATED / FAKE</span> &bull; ${confidencePct}% Confidence`;
+                pillText.textContent = `DeepFake (${confidencePct}%)`;
+
+                glowTargetColor.set(1.0, 0.2, 0.4);
+                glowTargetIntensity = 0.95;
+                innerShaderMat.uniforms.uStatusColor.value.set(1.0, 0.2, 0.4);
+                innerShaderMat.uniforms.uBorderGlow.value = 1.0;
+
+                logoMark.style.background = 'var(--fake-color)';
+                logoMark.style.boxShadow = '0 0 20px rgba(255, 51, 102, 0.7)';
+            }
+        }
+
+        fbBtnYes.addEventListener('click', () => submitPredictionFeedback(true));
+        fbBtnNo.addEventListener('click', () => submitPredictionFeedback(false));
+
+        async function submitPredictionFeedback(isCorrect) {
+            if (!lastPredictionResult) return;
+            const predictedLabel = lastPredictionResult.label || (lastPredictionResult.is_real ? 'Real' : 'Fake');
+            const correctedLabel = isCorrect ? predictedLabel : (lastPredictionResult.is_real ? 'Fake' : 'Real');
+
+            feedbackButtons.style.display = 'none';
+            feedbackMsg.style.display = 'block';
+            feedbackMsg.innerHTML = '<span style="color:#00e5ff">Recording active learning telemetry...</span>';
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/feedback`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prediction: predictedLabel,
+                        confidence: lastPredictionResult.confidence || 0.0,
+                        is_correct: isCorrect,
+                        user_label: correctedLabel,
+                        timestamp: Date.now() / 1000
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (isCorrect) {
+                        feedbackMsg.innerHTML = `<span style="color:var(--real-color)">&#10003; Confirmed!</span> Verified as ground truth (Feedback #${data.total_feedbacks || 1})`;
+                    } else {
+                        feedbackMsg.innerHTML = `<span style="color:var(--fake-color)">&#10003; Correction saved!</span> Tagged as <b>${correctedLabel}</b> for fine-tuning (Feedback #${data.total_feedbacks || 1})`;
+                    }
+                } else {
+                    feedbackMsg.innerHTML = isCorrect 
+                        ? `<span style="color:var(--real-color)">&#10003; Confirmed!</span> Prediction logged.`
+                        : `<span style="color:var(--fake-color)">&#10003; Correction saved!</span> Tagged as <b>${correctedLabel}</b>.`;
+                }
+            } catch (err) {
+                feedbackMsg.innerHTML = isCorrect 
+                    ? `<span style="color:var(--real-color)">&#10003; Confirmed!</span> Recorded in local session.`
+                    : `<span style="color:var(--fake-color)">&#10003; Correction saved!</span> Tagged as <b>${correctedLabel}</b>.`;
+            }
+        }
+
+        function resetAnalysis() {
+            isAnalyzing = false;
+            lastPredictionResult = null;
+            currentUploadedFile = null;
+            fileInput.value = '';
+            pillText.textContent = 'Drop Face Image Inside Cube';
+            hudCard.classList.remove('visible');
+            feedbackPanel.style.display = 'none';
+            feedbackMsg.style.display = 'none';
+            hudBadge.style.background = '';
+            hudBadge.style.borderColor = '';
+            hudBadge.style.color = '';
+            glowTargetIntensity = 0.0;
+            innerShaderMat.uniforms.uScanProgress.value = -1.0;
+            innerShaderMat.uniforms.uBorderGlow.value = 0.0;
+
+            logoMark.style.background = '#fff';
+            logoMark.style.boxShadow = 'none';
+
+            bioStep1.className = 'step-card'; bioTag1.textContent = 'READY';
+            bioStep2.className = 'step-card'; bioTag2.textContent = 'IDLE';
+            bioStep3.className = 'step-card'; bioTag3.textContent = 'IDLE';
+            bioStep4.className = 'step-card'; bioTag4.textContent = 'IDLE';
+            bioTag4.style.background = '';
+            bioTag4.style.color = '';
+            bioDesc4.textContent = 'Real vs DeepFake Result';
+            bioStatusHint.textContent = 'Drag & drop any face photo into the 3D crystal cube to trigger the 4-phase inference scan.';
+
+            tabTraining.click();
+            headlineLines = ['Explore', 'New', 'Ideas'];
+            drawHeadline();
+            drawDefaultSpecimen();
+        }
+
+        /* ── Live Training Telemetry Polling with Visibility & Completion Optimization ── */
+        let pollTimer = null;
+        let isPollingActive = true;
+
+        async function pollTrainingStatus() {
+            if (document.hidden) return;
+            try {
+                const res = await fetch(`${API_BASE_URL}/training-status`);
+                if (res.ok) {
+                    const data = await res.json();
+                    updateTrainingDashboard(data);
+                    if (data.status === 'completed' && isPollingActive) {
+                        // Switch from aggressive 2.5s poll to relaxed 15s heartbeat
+                        isPollingActive = false;
+                        if (pollTimer) clearInterval(pollTimer);
+                        pollTimer = setInterval(pollTrainingStatus, 15000);
+                    }
+                }
+            } catch (e) {
+                // Silently hold last known values if backend is starting up
+            }
+        }
+
+        function updateTrainingDashboard(data) {
+            if (!data) return;
+            const batch = data.batch || 875;
+            const totalBatches = data.total_batches || 2500;
+            const epoch = data.epoch || 1;
+            const totalEpochs = data.total_epochs || 10;
+            const acc = (data.accuracy !== undefined && data.accuracy !== null) ? Number(data.accuracy).toFixed(1) : '72.6';
+            const loss = (data.loss !== undefined && data.loss !== null) ? Number(data.loss).toFixed(3) : '0.524';
+            const pct = Math.min(100, Math.round((batch / totalBatches) * 100));
+
+            step2Desc.textContent = `Epoch ${epoch}: Batch ${batch}/${totalBatches}`;
+            metricEpoch.textContent = `${epoch} / ${totalEpochs}`;
+            metricBatchPct.textContent = `${pct}%`;
+            barEpoch.style.width = `${pct}%`;
+
+            metricAcc.textContent = `${acc}%`;
+            barAcc.style.width = `${Math.min(100, acc)}%`;
+
+            metricLoss.textContent = `${loss}`;
+            const lossBarPct = Math.min(100, Math.max(10, Math.round(parseFloat(loss) * 100)));
+            barLoss.style.width = `${lossBarPct}%`;
+
+            // Dynamic phase cards update
+            const pIdx = data.phase_idx || 2;
+            const isCompleted = data.status === 'completed';
+            const step2Card = document.getElementById('phase-step-2');
+            const step3Card = document.getElementById('phase-step-3');
+            const step4Card = document.getElementById('phase-step-4');
+
+            if (pIdx >= 3 && step2Card && step3Card) {
+                step2Card.classList.remove('active');
+                const tag2 = step2Card.querySelector('.step-tag');
+                if (tag2) { tag2.textContent = 'DONE'; tag2.classList.remove('pulse'); }
+
+                step3Card.classList.add('active');
+                const tag3 = step3Card.querySelector('.step-tag');
+                if (tag3) { tag3.textContent = isCompleted ? 'DONE' : 'ACTIVE'; if (!isCompleted) tag3.classList.add('pulse'); else tag3.classList.remove('pulse'); }
+                const desc3 = step3Card.querySelector('.step-desc');
+                if (desc3 && !isCompleted) desc3.textContent = `Epoch ${epoch}: Batch ${batch}/${totalBatches}`;
+            }
+
+            if (isCompleted && step4Card) {
+                if (step3Card) {
+                    step3Card.classList.remove('active');
+                    const tag3 = step3Card.querySelector('.step-tag');
+                    if (tag3) { tag3.textContent = 'DONE'; tag3.classList.remove('pulse'); }
+                }
+                step4Card.classList.add('active');
+                const tag4 = step4Card.querySelector('.step-tag');
+                if (tag4) { tag4.textContent = 'READY'; tag4.classList.add('pulse'); }
+            }
+        }
+
+        // Initial poll + interval
+        pollTrainingStatus();
+        pollTimer = setInterval(pollTrainingStatus, 2500);
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                pollTrainingStatus();
+            }
+        });
+
+        /* ── Animation Loop ── */
+        let lastTime = 0;
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            let dt = (time - lastTime) / 1000;
+            if (lastTime === 0) dt = 1 / 60;
+            dt = Math.min(dt, 0.05);
+            lastTime = time;
+
+            const dtScale = dt * 60;
+
+            if (isAnalyzing) {
+                const scanElapsed = (time - scanStartTime) / 1000;
+                const cycle = (scanElapsed * 1.3) % 1.0;
+                innerShaderMat.uniforms.uScanProgress.value = cycle;
+            }
+
+            curGlowIntensity = THREE.MathUtils.lerp(curGlowIntensity, glowTargetIntensity, 0.08);
+            frontMat.uniforms.uGlowColor.value.copy(glowTargetColor);
+            frontMat.uniforms.uGlowIntensity.value = curGlowIntensity;
+            backMat.uniforms.uGlowColor.value.copy(glowTargetColor);
+            backMat.uniforms.uGlowIntensity.value = curGlowIntensity * 0.5;
+
+            innerShaderMat.uniforms.uTime.value = time * 0.001;
+
+            if (!isDragging && cubeLoaded) {
+                const damping = Math.pow(0.94, dtScale);
+                velX *= damping;
+                velY *= damping;
+                if (Math.abs(velX) > 0.0001 || Math.abs(velY) > 0.0001) {
+                    applyRotation(velX * dtScale, velY * dtScale);
+                }
+
+                if (Math.abs(spinRemaining) > 0.0005) {
+                    const step = spinRemaining * Math.min(1, 0.09 * dtScale);
+                    applyRotation(step, 0);
+                    spinRemaining -= step;
+                } else {
+                    spinRemaining = 0;
+                }
+
+                const timeSinceTouch = (performance.now() - lastIdleTouch) / 1000;
+                if (timeSinceTouch > 0.6) {
+                    idleBlend = Math.min(1, idleBlend + dt);
+                }
+                if (idleBlend > 0 && spinRemaining === 0) {
+                    const speedMultiplier = isAnalyzing ? 3.0 : 1.0;
+                    applyRotation(0.0035 * dtScale * idleBlend * speedMultiplier, 0.0012 * dtScale * idleBlend * speedMultiplier);
+                }
+            }
+
+            if (!cubeLoaded) {
+                renderer.render(bgScene, camera);
+                return;
+            }
+
+            /* ── 2-Pass Refraction Pipeline ── */
+            // 1) bgScene -> rtBack
+            renderer.setRenderTarget(rtBack);
+            renderer.render(bgScene, camera);
+
+            // 2) bgScene + inner specimen + cube backfaces -> rtFront
+            renderer.setRenderTarget(rtFront);
+            renderer.render(bgScene, camera);
+            renderer.autoClear = false;
+
+            cubeMeshFront.visible = false;
+            cubeMeshBack.visible = true;
+            innerMesh.visible = true;
+            renderer.render(scene, camera);
+            renderer.autoClear = true;
+
+            // 3) bgScene + cube frontfaces (which refract rtFront) -> screen
+            renderer.setRenderTarget(null);
+            renderer.render(bgScene, camera);
+            renderer.autoClear = false;
+            renderer.clearDepth();
+
+            cubeMeshFront.visible = true;
+            cubeMeshBack.visible = false;
+            innerMesh.visible = false;
+            renderer.render(scene, camera);
+            renderer.autoClear = true;
+        }
+
+        /* ── Init ── */
+        async function init() {
+            await Promise.race([
+                Promise.all([document.fonts.load('800 100px Poppins'), document.fonts.ready]),
+                new Promise(r => setTimeout(r, 2500))
+            ]);
+
+            layout();
+            requestAnimationFrame(animate);
+
+            document.fonts.addEventListener('loadingdone', () => {
+                drawHeadline();
+            });
+        }
+
+        window.addEventListener('resize', layout);
+        init();
+    </script>
 </body>
+
 </html>

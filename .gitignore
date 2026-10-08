@@ -45,6 +45,19 @@ venv.bak/
 .project
 .pydevproject
 
+# Antigravity / AI Agent & Assistant cache
+.agents/
+.cursor/
+.claude/
+
+# Pytest / Test runners & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
 # Operating System files
 .DS_Store
 Thumbs.db

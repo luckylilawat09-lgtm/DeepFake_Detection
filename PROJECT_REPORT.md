@@ -220,22 +220,33 @@ The trained checkpoint (`deepfake_detector.pth`, 17.6 MB) achieved:
 
 ### 9.1 Endpoint Architecture
 The backend is served via Flask with Cross-Origin Resource Sharing (`flask-cors`) enabled for seamless decoupled client integration:
-- `POST /predict`: Ingests binary multipart image streams.
+- `POST /predict`: Ingests binary multipart image streams, executes forward inference, and returns confidence scores.
 - `GET /training-status`: Emits JSON telemetry depicting pipeline milestones, batch progress, and active loss metrics.
+- `POST /feedback`: Records human-in-the-loop validation labels to `models/feedback_log.json` for active learning and dataset expansion.
+- `GET /feedback`: Returns cumulative statistics on real vs. false positive predictions.
+- `POST /reload-model`: Triggers a non-disruptive hot reload of the model weights directly into memory.
 - `GET /`: Health check and model registry confirmation.
 
 ### 9.2 Biometric Privacy & Zero-Retention Policy
 To guarantee privacy compliance:
 - Images uploaded to the server are written to an ephemeral staging directory (`backend/uploads/`).
 - Filenames are sanitized via `werkzeug.utils.secure_filename` to prevent path traversal exploits (`../../etc/passwd`).
-- Immediately following tensor transformation in `Pillow` and PyTorch execution, the physical file is unlinked from disk:
+- Immediately following tensor transformation in `Pillow` and PyTorch execution, the physical file is unlinked from disk in a `finally` block:
   ```python
   try:
-      os.remove(filepath)
+      if os.path.exists(filepath):
+          os.remove(filepath)
   except OSError:
       pass
   ```
-- No user imagery or identifying metadata is logged or permanently archived.
+- No user imagery or identifying metadata is permanently persisted on disk.
+
+### 9.3 Quality Assurance & Automated Validation
+The platform incorporates an automated testing suite utilizing `pytest`:
+- **API Integration Tests (`test_api.py`):** Validates all REST contracts, multipart handling, 400 bad-request responses for corrupted files/invalid extensions, and feedback logging.
+- **Model Architecture Tests (`test_model.py`):** Asserts tensor dimensional compatibility ($1 \times 3 \times 224 \times 224$ and batch shapes), dropout behavior, and checkpoint state loading.
+- **Training Pipeline Tests (`test_train_utils.py`):** Verifies telemetry persistence routines, torchvision transform normalization bounds, and CLI argument parsing.
+- **Verification Metric:** 100% passing test rate (14/14 tests) across standard test executions.
 
 ---
 

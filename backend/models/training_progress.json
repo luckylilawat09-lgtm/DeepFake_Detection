@@ -1,0 +1,12 @@
+{
+  "status": "training",
+  "epoch": 1,
+  "total_epochs": 10,
+  "batch": 340,
+  "total_batches": 2500,
+  "loss": 0.495,
+  "accuracy": 75.57,
+  "phase": "Phase 3: Backbone Fine-Tuning",
+  "phase_idx": 3,
+  "backbone_unfrozen": true
+}

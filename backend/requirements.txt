@@ -13,3 +13,6 @@ numpy>=1.24.0
 # Optional Performance / Telemetry Utilities
 tqdm>=4.65.0
 requests>=2.31.0
+
+# Testing & Quality Assurance
+pytest>=7.0.0
