@@ -5,15 +5,19 @@
 [![CI Pipeline](https://github.com/luckylilawat09-lgtm/DeepFake_Detection/actions/workflows/ci.yml/badge.svg)](https://github.com/luckylilawat09-lgtm/DeepFake_Detection/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Tests](https://img.shields.io/badge/PyTest-14%20Passed-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](backend/tests/)
+[![Tests](https://img.shields.io/badge/PyTest-20%20Passed-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](backend/tests/)
 [![Flask](https://img.shields.io/badge/Flask-2.3%2B-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Three.js](https://img.shields.io/badge/Three.js-WebGL%203D-black?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
 [![Dataset](https://img.shields.io/badge/Dataset-Kaggle%20140k%20Faces-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white)](https://www.kaggle.com/datasets/xhlulu/140k-real-and-fake-faces)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  <b>A state-of-the-art synthetic media detection platform featuring an EfficientNet-B0 convolutional neural network paired with an interactive 3D chromatic glass refraction interface, active learning telemetry, and an automated test suite.</b>
+  <b>A deepfake detection platform featuring an EfficientNet-B0 transfer learning classifier paired with an interactive 3D chromatic glass refraction interface, active learning telemetry, and an automated 20-test QA suite.</b>
 </p>
+
+**Group 233 · VIT Bhopal · Project Exhibition-I**  
+*Team Members:* Tadiboyina Siva, Prisha Verma, Lucky Lilawat, Nanya, Jitesh Maru.  
+*AI Assistance Disclosure:* Development and training execution were implemented using **Antigravity** (Google DeepMind's AI coding assistant), with full review, verification, and empirical testing conducted by the project team.
 
 [Key Features](#-key-features) •
 [System Architecture](#-system-architecture) •
@@ -30,13 +34,13 @@
 
 ## 📌 Executive Summary
 
-With the exponential surge of hyper-realistic generative models (GANs, Diffusion, Face-Swapping), detecting digitally manipulated facial media has become a cornerstone of biometric security, digital forensics, and content integrity.
+With the rise of generative adversarial networks (GANs)—specifically StyleGAN—detecting synthesized facial media is a key challenge for biometric security and digital content integrity.
 
-This repository provides an **end-to-end, production-grade DeepFake detection ecosystem**:
-1. **Core AI Engine:** A fine-tuned **EfficientNet-B0** binary classifier built in **PyTorch**, trained on real versus GAN-synthesized human faces with progressive 2-stage fine-tuning and mixed-precision acceleration.
+This repository implements a **baseline facial deepfake detection pipeline**:
+1. **Core AI Engine:** A fine-tuned **EfficientNet-B0** binary classifier built in **PyTorch**, trained on real faces (FFHQ) versus GAN-synthesized human faces (StyleGAN) with progressive 2-stage fine-tuning and learning rate scheduling.
 2. **Visual Telemetry Frontend:** An interactive 3D viewport inspired by cutting-edge WebGL aesthetics ([motionsites.ai prompt](https://motionsites.ai/?prompt=design-world)), featuring custom GLSL chromatic refraction, dynamic laser scanning, and real-time neural pipeline HUD metrics.
 3. **High-Throughput API:** A modular Flask REST server with ephemeral upload sanitation, active learning human feedback logging (`/feedback`), dynamic checkpoint reloading (`/reload-model`), and real-time training progress streaming.
-4. **Automated QA & CI:** Comprehensive PyTest test suite (14 passing tests) and GitHub Actions CI workflow covering Python 3.10 through 3.12.
+4. **Automated QA & CI:** Comprehensive PyTest test suite (20 passing tests) and GitHub Actions CI workflow covering Python 3.10 through 3.13.
 
 ---
 
@@ -107,9 +111,11 @@ The deep learning model is trained on the benchmark **140k Real and Fake Faces**
 | Partition | Real Faces | Fake (GAN) Faces | Total Samples | Purpose |
 | :--- | :---: | :---: | :---: | :--- |
 | **Train** | 20,001 | 20,001 | **40,002** | Supervised parameter optimization |
-| **Validation** | 5,000 | 5,000 | **10,000** | Generalization tracking & early stopping |
-| **Test** | 3,793 | 3,794 | **7,587** | Final unbiased performance evaluation |
-| **Total** | **28,794** | **28,795** | **57,589** | Balanced distribution preventing class bias |
+| **Validation** | 6,199 | 6,161 | **12,360** | Generalization tracking & model checkpointing |
+| **Test** | 2,604 | 2,623 | **5,227** | Final unbiased performance evaluation |
+| **Total** | **28,804** | **28,785** | **57,589** | Balanced distribution from Kaggle archive |
+
+*(Note: Data Sets 1 through 4 in the Kaggle archive total 230,335 images; model baseline is trained on Data Set 1).*
 
 ---
 
@@ -124,8 +130,18 @@ The deep learning model is trained on the benchmark **140k Real and Fake Faces**
 
 ### Progressive 2-Stage Training Strategy
 1. **Stage 1 — Classifier Warmup (Epochs 1–2):** Feature extractor is frozen (`requires_grad = False`). Custom classifier head is trained at `lr = 1e-3`.
-2. **Stage 2 — Backbone Fine-Tuning (Epochs 3+):** Convolutional backbone is unfrozen and trained at `lr = 1e-5` with `weight_decay = 1e-4` to adapt feature extractors to subtle GAN frequency artifacts.
-3. **Optimization:** Adam optimizer paired with `ReduceLROnPlateau` and automatic mixed precision (`torch.cuda.amp.GradScaler`).
+2. **Stage 2 — Backbone Fine-Tuning (Epochs 3–10):** Convolutional backbone is unfrozen and trained at `fine_tune_lr = 1e-5` with classifier head maintaining `lr = 1e-3` and `weight_decay = 1e-4` to adapt feature extractors to subtle GAN textures.
+3. **Optimization & Scheduling:** Adam optimizer paired with `ReduceLROnPlateau(factor=0.5, patience=2)` and early stopping on validation accuracy (patience = 5).
+
+### Empirical Performance
+- **Peak Validation Accuracy:** **`95.66%`** (Epoch 10)
+- **Best Validation Loss:** **`0.1191`**
+- **Test Accuracy:** **`78.59%`** (across 5,227 unseen test portraits)
+- **Test Loss:** **`0.5822`**
+- **Precision (Fake):** **`72.51%`**
+- **Recall (Fake):** **`92.34%`**
+- **F1-Score:** **`81.23%`**
+- **Inference Latency:** **`33.96 ms`** $\pm$ `5.48 ms` per image (CPU, timed over 100 runs)
 
 ### CLI Training Options
 The training engine (`backend/train.py`) exposes a robust command-line interface:
@@ -202,9 +218,9 @@ python backend/app.py
 In a separate terminal:
 ```bash
 cd frontend
-python -m http.server 8080
+python -m http.server 8000
 ```
-Open your browser to: **`http://localhost:8080`**
+Open your browser to: **`http://localhost:8000`**
 
 ---
 
@@ -304,22 +320,28 @@ The project includes unit and integration tests powered by `pytest`:
 python -m pytest backend/tests -v
 ```
 
-### Test Coverage Summary:
-- **`test_api.py` (8 tests):**
-  - Root health check endpoint validation
-  - Prediction endpoint with valid JPG/PNG tensors
-  - Error handling for missing files, invalid extensions, corrupted buffers
-  - Training status telemetry schema validation
-  - Active learning feedback submission and audit retrieval
-  - Model reloading endpoint validation
-- **`test_model.py` (3 tests):**
-  - EfficientNet-B0 model initialization and architecture verification
-  - Single and batch tensor forward-pass output dimension tests
-  - Model checkpoint loading and state verification
-- **`test_train_utils.py` (3 tests):**
-  - Training telemetry persistence and error resilience
-  - Augmentation pipeline output dimensions and normalization verification
-  - CLI argument parser defaults and overrides
+### Test Coverage Summary (20 Tests):
+- **`test_api.py` (10 tests):**
+  - Root health check endpoint (`/`) validation
+  - Prediction endpoint (`/predict`) with valid PNG/JPG tensors
+  - Ephemeral file cleanup verification
+  - Error handling for missing files, empty filenames, invalid extensions, corrupted buffers
+  - Training status telemetry schema validation (`/training-status`)
+  - Active learning human feedback submission (`POST /feedback`) and retrieval (`GET /feedback`)
+  - Mock model fallback handling when weights are not loaded (`using_trained_model: false`)
+  - Model hot-reloading endpoint (`POST /reload-model`)
+- **`test_model.py` (5 tests):**
+  - EfficientNet-B0 model initialization and custom binary head architecture
+  - Single and batch tensor forward-pass output dimension tests ($1 \times 2$ and $B \times 2$)
+  - Feature backbone unfreezing and differential learning rate assignment
+  - Dual dropout regularizer presence and dropout rate verification ($p=0.3$, $p=0.2$)
+  - Checkpoint state loading and inference verification from `models/deepfake_detector.pth`
+- **`test_train_utils.py` (5 tests):**
+  - Atomic training telemetry persistence (`training_progress.json`)
+  - Dataset split directory discovery for direct structures
+  - Exception handling for non-existent dataset paths
+  - Torchvision ImageNet transform normalization bounds verification
+  - CLI argument parser flags, defaults, and overrides (`train.parse_args`)
 
 ---
 

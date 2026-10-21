@@ -49,3 +49,42 @@ def test_find_dataset_splits_direct_structure():
         assert len(splits) == 1
         assert os.path.isdir(splits[0]["train"])
         assert os.path.isdir(splits[0]["val"])
+
+
+def test_transform_normalization_bounds():
+    """Verify image transformation produces correct tensor shape and normalized ranges."""
+    from torchvision import transforms
+    from PIL import Image
+
+    transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+
+    test_img = Image.new("RGB", (300, 300), color=(128, 128, 128))
+    tensor = transform(test_img)
+    assert tensor.shape == (3, 224, 224)
+    # Check that pixel values are normalized (not in [0, 255] or [0, 1])
+    assert tensor.min() < 0.5
+    assert tensor.max() > -0.5
+
+
+def test_cli_argument_parsing(monkeypatch):
+    """Verify CLI parser sets custom training flags."""
+    test_args = [
+        "train.py",
+        "--epochs", "5",
+        "--batch-size", "32",
+        "--lr", "0.0005",
+        "--fine-tune-lr", "0.00002",
+        "--unfreeze-after-epoch", "3"
+    ]
+    monkeypatch.setattr(sys, "argv", test_args)
+    args = train.parse_args()
+    assert args.epochs == 5
+    assert args.batch_size == 32
+    assert args.lr == 0.0005
+    assert args.fine_tune_lr == 0.00002
+    assert args.unfreeze_after_epoch == 3
+

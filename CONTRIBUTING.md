@@ -44,7 +44,7 @@ This project is governed by the [Contributor Covenant Code of Conduct](CODE_OF_C
 - Endpoints must return consistent JSON schemas.
 - Always include automated file cleanup in upload handlers (`finally: os.remove(filepath)`) to prevent disk leaks.
 - Maintain mock model fallbacks so frontend testing is possible without GPU hardware or pre-downloaded model checkpoints.
-- Ensure feedback logging and progress tracking safely handle concurrent access and missing files.
+- Ensure feedback logging and progress tracking gracefully handle missing files or I/O interruptions (note: logging currently uses direct JSON file persistence without inter-process file locks).
 
 ### Frontend & 3D Shaders (`frontend/index.html`)
 - Preserve the 60fps performance budget on WebGL/Canvas rendering.

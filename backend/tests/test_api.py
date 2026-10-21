@@ -105,3 +105,38 @@ def test_reload_model_endpoint(client):
     data = response.get_json()
     assert "success" in data
     assert "model_loaded" in data
+
+
+def test_feedback_logging_post_and_get(client):
+    """Verify submitting feedback records entry and GET returns statistics."""
+    payload = {
+        "prediction": "Real",
+        "confidence": 0.94,
+        "is_correct": True,
+        "user_label": "Real"
+    }
+    post_res = client.post("/feedback", json=payload)
+    assert post_res.status_code == 200
+    post_data = post_res.get_json()
+    assert post_data["success"] is True
+    assert "entry" in post_data
+    assert post_data["entry"]["prediction"] == "Real"
+
+    get_res = client.get("/feedback")
+    assert get_res.status_code == 200
+    get_data = get_res.get_json()
+    assert "total" in get_data
+    assert get_data["total"] >= 1
+    assert "correct" in get_data
+
+
+def test_predict_mock_fallback(client, sample_image_bytes, monkeypatch):
+    """Verify that when trained model is unloaded, predict falls back to mock with flag False."""
+    monkeypatch.setattr(app, "MODEL_LOADED", False)
+    data = {"file": (io.BytesIO(sample_image_bytes), "face.png")}
+    response = client.post("/predict", data=data, content_type="multipart/form-data")
+    assert response.status_code == 200
+    res_data = response.get_json()
+    assert res_data["using_trained_model"] is False
+    assert res_data["label"] in ["Real", "Fake"]
+

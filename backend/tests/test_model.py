@@ -52,3 +52,27 @@ def test_unfreeze_backbone():
     # Optimizer should now have 2 param groups (classifier + backbone)
     assert len(optimizer.param_groups) == 2
     assert optimizer.param_groups[1]["lr"] == 1e-5
+
+
+def test_dropout_layers():
+    """Verify classifier head has the designated dual-dropout regularizers."""
+    model = train.build_model(num_classes=2, pretrained=False)
+    dropouts = [m for m in model.classifier if isinstance(m, nn.Dropout)]
+    assert len(dropouts) == 2
+    assert dropouts[0].p == 0.3
+    assert dropouts[1].p == 0.2
+
+
+def test_checkpoint_state_loading():
+    """Verify model can load saved checkpoint state dict and evaluate."""
+    model = train.build_model(num_classes=2, pretrained=False)
+    checkpoint_path = os.path.join(train.DEFAULT_SAVE_DIR, "deepfake_detector.pth")
+    if os.path.exists(checkpoint_path):
+        ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+        model.load_state_dict(ckpt["model_state_dict"])
+        model.eval()
+        dummy_input = torch.randn(1, 3, 224, 224)
+        with torch.no_grad():
+            out = model(dummy_input)
+        assert out.shape == (1, 2)
+

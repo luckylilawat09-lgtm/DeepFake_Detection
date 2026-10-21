@@ -36,10 +36,14 @@ sys.stdout.reconfigure(line_buffering=True)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_SAVE_DIR = os.path.join(SCRIPT_DIR, "models")
 
-# Portable dataset root resolution (Environment -> Archive path -> local data fallback)
+# Portable dataset root resolution (Environment -> local data -> detected archive fallback)
 ENV_DATA_DIR = os.environ.get("DATASET_DIR")
 if ENV_DATA_DIR and os.path.exists(ENV_DATA_DIR):
     DEFAULT_DATA_ROOT = ENV_DATA_DIR
+elif os.path.exists(os.path.join(SCRIPT_DIR, "data")):
+    DEFAULT_DATA_ROOT = os.path.join(SCRIPT_DIR, "data")
+elif os.path.exists(os.path.join(os.path.dirname(SCRIPT_DIR), "data")):
+    DEFAULT_DATA_ROOT = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 elif os.path.exists(r"C:\Users\lucky\Downloads\archive"):
     DEFAULT_DATA_ROOT = r"C:\Users\lucky\Downloads\archive"
 else:
@@ -86,7 +90,7 @@ def get_device():
     if torch.cuda.is_available():
         device = torch.device("cuda")
         print(f"[OK] Using GPU: {torch.cuda.get_device_name(0)}")
-        print(f"     VRAM: {torch.cuda.get_device_properties(0).total_mem / 1024**3:.1f} GB")
+        print(f"     VRAM: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f} GB")
     else:
         device = torch.device("cpu")
         num_cores = os.cpu_count() or 4

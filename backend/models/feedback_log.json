@@ -310,5 +310,53 @@
     "is_correct": true,
     "user_label": "Fake",
     "timestamp": 1791450612.668728
+  },
+  {
+    "id": "bbd71a00",
+    "prediction": "Real",
+    "confidence": 0.7682483792304993,
+    "is_correct": true,
+    "user_label": "Real",
+    "timestamp": 1791543579.7779012
+  },
+  {
+    "id": "0cae2f35",
+    "prediction": "Fake",
+    "confidence": 0.9952669143676758,
+    "is_correct": true,
+    "user_label": "Fake",
+    "timestamp": 1791543610.2110796
+  },
+  {
+    "id": "66e07382",
+    "prediction": "Real",
+    "confidence": 0.5996533036231995,
+    "is_correct": true,
+    "user_label": "Real",
+    "timestamp": 1791543632.0221474
+  },
+  {
+    "id": "6aa9cb13",
+    "prediction": "Real",
+    "confidence": 0.94,
+    "is_correct": true,
+    "user_label": "Real",
+    "timestamp": 1791544903.541649
+  },
+  {
+    "id": "fbfb99ae",
+    "prediction": "Real",
+    "confidence": 0.94,
+    "is_correct": true,
+    "user_label": "Real",
+    "timestamp": 1791545530.3876982
+  },
+  {
+    "id": "098a99b5",
+    "prediction": "Real",
+    "confidence": 0.94,
+    "is_correct": true,
+    "user_label": "Real",
+    "timestamp": 1791546636.7356946
   }
 ]

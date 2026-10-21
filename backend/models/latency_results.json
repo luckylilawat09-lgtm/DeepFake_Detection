@@ -1,0 +1,33 @@
+{
+  "hardware": {
+    "cpu_model": "13th Gen Intel(R) Core(TM) i7-13650HX",
+    "ram": "16 GB",
+    "system_gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU, Intel(R) UHD Graphics",
+    "cuda_available": false,
+    "torch_device": "CPU (PyTorch build lacks CUDA or no CUDA device)",
+    "os": "Windows 11"
+  },
+  "model_only_cpu": {
+    "runs": 100,
+    "warmup": 10,
+    "mean_ms": 77.627,
+    "std_ms": 86.023,
+    "median_ms": 35.483,
+    "min_ms": 23.826,
+    "max_ms": 428.469,
+    "p95_ms": 250.868
+  },
+  "model_only_gpu": null,
+  "end_to_end_predict": {
+    "mode": "Live HTTP",
+    "runs": 100,
+    "warmup": 10,
+    "mean_ms": 79.481,
+    "std_ms": 49.227,
+    "median_ms": 68.854,
+    "min_ms": 55.365,
+    "max_ms": 392.125,
+    "p95_ms": 92.781
+  },
+  "timestamp": "2026-10-09T11:49:40Z"
+}

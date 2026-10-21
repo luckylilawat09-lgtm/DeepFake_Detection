@@ -981,6 +981,22 @@
             box-shadow: 0 0 15px var(--fake-glow);
         }
 
+        .mock-warning-banner {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(255, 170, 0, 0.16);
+            color: #ffaa00;
+            border: 1px solid rgba(255, 170, 0, 0.6);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-top: 10px;
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.2);
+            line-height: 1.4;
+        }
+
         .hud-pulse-dot {
             width: 6px;
             height: 6px;
@@ -1362,7 +1378,7 @@
                         <div class="step-number">B2</div>
                         <div class="step-info">
                             <span class="step-label">Artifact Scan</span>
-                            <span class="step-desc">Frequency & Blending</span>
+                            <span class="step-desc">Neural Texture & Edge Cues</span>
                         </div>
                         <span class="step-tag" id="bio-tag-2">IDLE</span>
                     </div>
@@ -1398,6 +1414,12 @@
                 </div>
                 <div style="font-size: 12px; font-weight: 600;" id="hud-verdict-summary">—</div>
                 <button class="hud-reset-btn interactive" id="hud-reset">Reset Specimen</button>
+
+                <!-- Mock Engine Notification Banner -->
+                <div class="mock-warning-banner" id="mock-warning-banner">
+                    <span style="font-size: 14px;">⚠️</span>
+                    <span><strong>MOCK ENGINE ACTIVE:</strong> Model weights (<code>deepfake_detector.pth</code>) are offline. Predictions are simulated.</span>
+                </div>
 
                 <!-- Model Prediction Feedback Box (Active Learning / Training Ground Truth) -->
                 <div class="feedback-panel" id="feedback-panel" style="display: none;">
@@ -2398,7 +2420,7 @@
             hudCard.classList.add('visible');
             hudBadge.className = 'hud-status-badge scanning';
             hudStatusText.textContent = 'Extracting Biometrics';
-            hudVerdictSummary.textContent = 'Phase B2: Analyzing frequency domain artifacts...';
+            hudVerdictSummary.textContent = 'Phase B2: Scanning multi-scale neural texture & spatial artifacts...';
 
             // Update Biometric Steps progression
             bioStep1.className = 'step-card completed';
@@ -2409,7 +2431,7 @@
             bioTag3.textContent = 'QUEUE';
             bioStep4.className = 'step-card';
             bioTag4.textContent = 'QUEUE';
-            bioStatusHint.textContent = 'Extracting Discrete Cosine Transform (DCT) and spatial artifacts...';
+            bioStatusHint.textContent = 'Extracting spatial texture anomalies and generative synthesis boundaries...';
 
             setTimeout(() => {
                 if (!isAnalyzing) return;
@@ -2464,6 +2486,9 @@
             isAnalyzing = false;
             innerShaderMat.uniforms.uScanProgress.value = -1.0;
 
+            const mockBanner = document.getElementById('mock-warning-banner');
+            if (mockBanner) mockBanner.style.display = 'none';
+
             bioStep3.className = 'step-card completed';
             bioTag3.textContent = 'DONE';
             bioStep4.className = 'step-card active';
@@ -2501,6 +2526,15 @@
             feedbackPanel.style.display = 'block';
             feedbackButtons.style.display = 'flex';
             feedbackMsg.style.display = 'none';
+
+            const mockBanner = document.getElementById('mock-warning-banner');
+            if (mockBanner) {
+                if (result.using_trained_model === false) {
+                    mockBanner.style.display = 'flex';
+                } else {
+                    mockBanner.style.display = 'none';
+                }
+            }
 
             const isReal = result.is_real;
             const confidencePct = Math.round(result.confidence * 100);
@@ -2605,6 +2639,10 @@
             hudCard.classList.remove('visible');
             feedbackPanel.style.display = 'none';
             feedbackMsg.style.display = 'none';
+
+            const mockBanner = document.getElementById('mock-warning-banner');
+            if (mockBanner) mockBanner.style.display = 'none';
+
             hudBadge.style.background = '';
             hudBadge.style.borderColor = '';
             hudBadge.style.color = '';
@@ -2655,6 +2693,12 @@
 
         function updateTrainingDashboard(data) {
             if (!data) return;
+
+            const mockBanner = document.getElementById('mock-warning-banner');
+            if (mockBanner && data.model_loaded === false) {
+                mockBanner.style.display = 'flex';
+            }
+
             const batch = data.batch || 875;
             const totalBatches = data.total_batches || 2500;
             const epoch = data.epoch || 1;

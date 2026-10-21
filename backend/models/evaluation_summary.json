@@ -1,0 +1,24 @@
+{
+  "device": "cpu",
+  "checkpoint_val_acc": 95.66343042071198,
+  "checkpoint_epoch": 10,
+  "latency_ms": {
+    "mean": 33.96,
+    "std": 5.48,
+    "iterations": 100
+  },
+  "test_metrics": {
+    "total_test_samples": 5227,
+    "test_accuracy_pct": 78.59,
+    "test_loss": 0.5822,
+    "confusion_matrix": {
+      "true_positives_fake": 2422,
+      "false_positives_fake": 918,
+      "true_negatives_real": 1686,
+      "false_negatives_real": 201
+    },
+    "precision": 0.7251,
+    "recall": 0.9234,
+    "f1_score": 0.8123
+  }
+}

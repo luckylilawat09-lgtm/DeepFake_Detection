@@ -1,7 +1,9 @@
 # Project Technical Report: DeepFake Biometric Detection & Real-Time Neural Telemetry
 
 **Project Title:** End-to-End DeepFake Biometric Detection System with 3D Chromatic Glass Refraction Interface  
-**Author:** Lucky  
+**Academic Affiliation:** Group 233 · VIT Bhopal · Project Exhibition-I  
+**Team Members:** Tadiboyina Siva, Prisha Verma, Lucky Lilawat, Nanya, Jitesh Maru  
+**AI Assistance Disclosure:** Architecture scaffolding, training execution, and full-stack integration developed using **Antigravity** (Google DeepMind's AI coding assistant), with rigorous manual review, verification, and empirical benchmarking conducted by the project team.  
 **Date:** October 2026  
 **Repository:** DeepFake Detection Platform  
 **License:** MIT License  
@@ -28,7 +30,7 @@
 
 Recent breakthroughs in deep generative models—predominantly Generative Adversarial Networks (StyleGAN, StyleGAN2/3) and Latent Diffusion Models—have facilitated the automated synthesis of photorealistic facial imagery that is indistinguishable from genuine biometric captures to the human eye. This technological inflection poses critical threats to biometric authentication, digital journalism, and social trust. 
 
-This project details the conception, implementation, and deployment of a holistic DeepFake detection framework. The machine learning pipeline leverages transfer learning on an **EfficientNet-B0** convolutional neural network, trained and evaluated against over **57,589** high-resolution samples extracted from the benchmark **Kaggle 140k Real and Fake Faces** dataset. The resulting binary classifier reaches an empirical validation accuracy of **76.69%** on difficult GAN-synthesized face splits. Concurrently, the user interface departs from static dashboard conventions by introducing an interactive **3D chromatic glass refraction cube** developed with **Three.js** and custom GLSL shaders, conceptualized using the **[motionsites.ai](https://motionsites.ai/?prompt=design-world)** prompt framework (`design-world`). The frontend establishes bidirectional telemetry with a Flask inference server, streaming training batch loss, classification confidence, and biometric ray sweeps in real time.
+This project details the conception, implementation, and deployment of a holistic DeepFake detection framework. The machine learning pipeline leverages transfer learning on an **EfficientNet-B0** convolutional neural network, trained and evaluated against **57,589** high-resolution face portraits from **Data Set 1** of the benchmark **Kaggle 140k Real and Fake Faces** collection. The resulting binary classifier reaches an empirical validation accuracy of **95.66%** (validation loss 0.1191) and an unbiased test accuracy of **78.59%** on unseen GAN-synthesized face splits, with a high synthetic face detection recall of **92.34%**. Concurrently, the user interface departs from static dashboard conventions by introducing an interactive **3D chromatic glass refraction cube** developed with **Three.js** and custom GLSL shaders, conceptualized using the **[motionsites.ai](https://motionsites.ai/?prompt=design-world)** prompt framework (`design-world`). The frontend establishes bidirectional telemetry with a Flask inference server, streaming training batch loss, classification confidence, and biometric ray sweeps in real time.
 
 ---
 
@@ -119,9 +121,11 @@ A rigorous three-way partition was maintained to guarantee unbiased evaluation:
 | Partition | Real Instances | Fake Instances | Total Instances | % of Partition |
 | :--- | :---: | :---: | :---: | :---: |
 | **Training Set** | 20,001 | 20,001 | 40,002 | 69.46% |
-| **Validation Set** | 5,000 | 5,000 | 10,000 | 17.36% |
-| **Test Set** | 3,793 | 3,794 | 7,587 | 13.18% |
-| **Total** | **28,794** | **28,795** | **57,589** | **100.00%** |
+| **Validation Set** | 6,199 | 6,161 | 12,360 | 21.46% |
+| **Test Set** | 2,604 | 2,623 | 5,227 | 9.08% |
+| **Total** | **28,804** | **28,785** | **57,589** | **100.00%** |
+
+*(Note on Archive Scale: The complete Kaggle download archive contains Data Sets 1 through 4, containing a total of 230,335 images. Data Set 1 was utilized for the primary baseline training and evaluation).*
 
 ### 5.3 Data Augmentation & Invariant Generalization
 To avoid shortcut learning (such as models classifying based purely on background blurring or specific color temperature biases inherent to StyleGAN training runs), the input pipeline injects stochastic augmentations:
@@ -181,10 +185,10 @@ Transfer learning was conducted in two distinct phases:
    - Optimizer: `Adam` with learning rate $\eta_{\text{head}} = 1 \times 10^{-3}$, weight decay $\lambda = 1 \times 10^{-4}$.
    - Focus: Rapid alignment of the 256-node hidden representation with ImageNet embeddings.
 
-2. **Stage 2: Differential Backbone Fine-Tuning (Epochs 3+):**
+2. **Stage 2: Differential Backbone Fine-Tuning (Epochs 3–10):**
    - The feature extractor was unfrozen (`requires_grad = True`).
    - Optimizer parameter groups were partitioned:
-     $$\eta_{\text{backbone}} = 1 \times 10^{-5}, \quad \eta_{\text{head}} = 1 \times 10^{-4}$$
+     $$\eta_{\text{backbone}} = 1 \times 10^{-5}, \quad \eta_{\text{head}} = 1 \times 10^{-3}$$
    - Focus: Subtle calibration of low-level and mid-level convolutional kernels to detect GAN upsampling grids and frequency domain artifacts.
 
 ### 7.2 Training Configuration Table
@@ -195,7 +199,8 @@ Transfer learning was conducted in two distinct phases:
 | **Loss Function** | Categorical Cross-Entropy | Standard negative log likelihood for binary classification |
 | **Optimizer** | Adam ($\beta_1=0.9, \beta_2=0.999$) | Stable adaptive moment estimation |
 | **Weight Decay** | $1 \times 10^{-4}$ | $L_2$ regularization mitigating weight explosion |
-| **Patience** | 5 Epochs | Early stopping on validation loss |
+| **Scheduler** | ReduceLROnPlateau (factor 0.5, patience 2) | Dynamic learning rate attenuation on validation loss plateau |
+| **Early Stopping** | Patience 5 Epochs | Early stopping on validation accuracy (`best_val_acc`) |
 | **Precision** | FP32 / AMP capable | Graceful fallback on CPU systems |
 
 ---
@@ -203,16 +208,25 @@ Transfer learning was conducted in two distinct phases:
 ## 8. Results, Validation & Performance Analysis
 
 ### 8.1 Empirical Performance
-The trained checkpoint (`deepfake_detector.pth`, 17.6 MB) achieved:
-- **Validation Accuracy:** **76.69%**
-- **Validation Loss:** ~0.4812
-- **Inference Latency (CPU):** $42 \text{ ms} \pm 5 \text{ ms}$ per portrait
-- **Inference Latency (GPU, CUDA):** $9 \text{ ms} \pm 1.2 \text{ ms}$ per portrait
+The trained checkpoint (`deepfake_detector.pth`, 52.5 MB) was comprehensively evaluated on the 5,227 unseen test set portraits using `backend/evaluate.py`:
+- **Peak Validation Accuracy:** **95.66%** (Epoch 10)
+- **Validation Loss:** **0.1191**
+- **Test Accuracy:** **78.59%**
+- **Test Loss:** **0.5822**
+- **Precision (Fake Detection):** **72.51%** (0.7251)
+- **Recall (Fake Detection):** **92.34%** (0.9234)
+- **F1-Score:** **81.23%** (0.8123)
+- **Inference Latency (CPU):** $33.96\text{ ms} \pm 5.48\text{ ms}$ per portrait (benchmarked over 100 iterations)
+
+#### Confusion Matrix ($N = 5,227$ Test Images, Fake = Positive Class):
+| Metric | Real Predicted | Fake Predicted | Class Total |
+| :--- | :---: | :---: | :---: |
+| **Actual Real Faces** | **1,686** (True Negative) | **918** (False Positive) | 2,604 |
+| **Actual Fake (GAN) Faces** | **201** (False Negative) | **2,422** (True Positive) | 2,623 |
 
 ### 8.2 Qualitative Forensic Findings
-1. **Eye Region Inconsistencies:** The network consistently localized manipulation cues around iris boundaries and pupillary reflection discrepancies common in first-generation StyleGAN portraits.
-2. **Hair & Ear Boundaries:** Fine, disorganized hair strands intersecting background elements generated elevated activation gradients in the deep convolutional feature maps.
-3. **Teeth & Dentition Geometry:** Repeated identical tooth spacing proved to be a strong signal for synthetic classification.
+1. **High Recall on Synthetic Artifacts:** With a 92.34% recall on GAN faces, the model successfully detects the vast majority of synthetic images, catching subtle pixel interpolations and textural irregularities.
+2. **False Positives on Studio Lighting:** The model shows a tendency (918 false positives) to classify certain studio-lit authentic portraits with smooth skin retouching as synthetic, indicating sensitivity to high-frequency frequency suppression.
 
 ---
 
@@ -242,11 +256,11 @@ To guarantee privacy compliance:
 - No user imagery or identifying metadata is permanently persisted on disk.
 
 ### 9.3 Quality Assurance & Automated Validation
-The platform incorporates an automated testing suite utilizing `pytest`:
-- **API Integration Tests (`test_api.py`):** Validates all REST contracts, multipart handling, 400 bad-request responses for corrupted files/invalid extensions, and feedback logging.
-- **Model Architecture Tests (`test_model.py`):** Asserts tensor dimensional compatibility ($1 \times 3 \times 224 \times 224$ and batch shapes), dropout behavior, and checkpoint state loading.
-- **Training Pipeline Tests (`test_train_utils.py`):** Verifies telemetry persistence routines, torchvision transform normalization bounds, and CLI argument parsing.
-- **Verification Metric:** 100% passing test rate (14/14 tests) across standard test executions.
+The platform incorporates an automated testing suite utilizing `pytest` with 20 passing unit and integration tests:
+- **API Integration Tests (`test_api.py`, 10 tests):** Validates all REST contracts, multipart handling, 400 bad-request responses for corrupted files/invalid extensions, active learning feedback logging (`POST /feedback`, `GET /feedback`), and mock model fallback responses when model weights are offline (`using_trained_model: false`).
+- **Model Architecture Tests (`test_model.py`, 5 tests):** Asserts tensor dimensional compatibility ($1 \times 3 \times 224 \times 224$ and batch shapes), feature backbone unfreezing with differential learning rates, dual dropout regularizer rates ($p=0.3$ and $p=0.2$), and checkpoint weight state loading.
+- **Training Pipeline Tests (`test_train_utils.py`, 5 tests):** Verifies atomic telemetry persistence routines, dataset split folder discovery, error handling for nonexistent paths, torchvision transform normalization bounds, and CLI argument parsing.
+- **Verification Metric:** 100% passing test rate (20/20 tests) across standard test executions (`python -m pytest backend/tests -v`).
 
 ---
 
