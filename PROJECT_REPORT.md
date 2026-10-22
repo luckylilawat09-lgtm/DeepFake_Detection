@@ -208,21 +208,28 @@ Transfer learning was conducted in two distinct phases:
 ## 8. Results, Validation & Performance Analysis
 
 ### 8.1 Empirical Performance
-The trained checkpoint (`deepfake_detector.pth`, 52.5 MB) was comprehensively evaluated on the 5,227 unseen test set portraits using `backend/evaluate.py`:
-- **Peak Validation Accuracy:** **95.66%** (Epoch 10)
+The trained checkpoint (`deepfake_detector.pth`, 52.5 MB) was comprehensively evaluated on the 5,227 unseen held-out test set portraits (2,623 fake, 2,604 real) using `backend/evaluate.py` with standard ImageNet normalization and no data augmentation (logged in `evaluation_results.txt`):
+- **Validation Accuracy:** **95.66%** (evaluated on the 12,360 validation set images at Epoch 10; used for checkpoint selection)
 - **Validation Loss:** **0.1191**
-- **Test Accuracy:** **78.59%**
+- **Test Accuracy (Unbiased):** **78.59%** (4,108 / 5,227 correct on held-out test split)
 - **Test Loss:** **0.5822**
-- **Precision (Fake Detection):** **72.51%** (0.7251)
-- **Recall (Fake Detection):** **92.34%** (0.9234)
-- **F1-Score:** **81.23%** (0.8123)
+- **Class 'Fake' (Synthetic Portraits - Positive Class):**
+  - **Precision:** **72.51%** (0.7251)
+  - **Recall:** **92.34%** (0.9234)
+  - **F1-Score:** **81.23%** (0.8123)
+- **Class 'Real' (Authentic Portraits):**
+  - **Precision:** **89.35%** (0.8935)
+  - **Recall:** **64.75%** (0.6475)
+  - **F1-Score:** **75.08%** (0.7508)
+- **Macro Averages:** Precision: **80.93%**, Recall: **78.54%**, F1-Score: **78.16%**
 - **Inference Latency (CPU):** $33.96\text{ ms} \pm 5.48\text{ ms}$ per portrait (benchmarked over 100 iterations)
 
-#### Confusion Matrix ($N = 5,227$ Test Images, Fake = Positive Class):
+#### Confusion Matrix ($N = 5,227$ Held-out Test Images, Fake = Positive Class):
 | Metric | Real Predicted | Fake Predicted | Class Total |
 | :--- | :---: | :---: | :---: |
-| **Actual Real Faces** | **1,686** (True Negative) | **918** (False Positive) | 2,604 |
-| **Actual Fake (GAN) Faces** | **201** (False Negative) | **2,422** (True Positive) | 2,623 |
+| **Actual Real Faces (FFHQ)** | **1,686** (True Negative) | **918** (False Positive) | 2,604 |
+| **Actual Fake Faces (StyleGAN)** | **201** (False Negative) | **2,422** (True Positive) | 2,623 |
+| **Total Predicted** | **1,887** | **3,340** | **5,227** |
 
 ### 8.2 Qualitative Forensic Findings
 1. **High Recall on Synthetic Artifacts:** With a 92.34% recall on GAN faces, the model successfully detects the vast majority of synthetic images, catching subtle pixel interpolations and textural irregularities.
@@ -266,8 +273,10 @@ The platform incorporates an automated testing suite utilizing `pytest` with 20 
 
 ## 10. Limitations & Adversarial Considerations
 
-While the model exhibits solid performance on StyleGAN-derived imagery, real-world deployment faces several constraints:
-1. **Cross-Generator Degradation:** Classifiers trained predominantly on StyleGAN can experience performance degradation when confronted with newer diffusion architectures (e.g., Midjourney v6, Flux.1, Stable Diffusion XL) without domain adaptation.
+> **Limitations Note:** The model was trained exclusively on binary portrait pairs (StyleGAN synthesized faces vs. authentic FFHQ portraits) from Kaggle's 140k dataset and may not generalize to other deepfake generation methods or broader synthetic media.
+
+While the model exhibits strong empirical recall (92.34%) on StyleGAN-derived imagery, real-world deployment faces several constraints:
+1. **Cross-Generator Degradation:** Classifiers trained predominantly on StyleGAN can experience severe performance degradation when confronted with newer diffusion architectures (e.g., Midjourney v6, Flux.1, Stable Diffusion XL), video-level face swapping (e.g., DeepFaceLab, SimSwap), or neural face reenactment without dedicated domain adaptation.
 2. **Compression Robustness:** Heavy JPEG compression (e.g., WhatsApp, Telegram transmission) acts as a low-pass filter, erasing the high-frequency pixel residuals that convolutional detectors rely on.
 3. **Adversarial Noise Perturbations:** Gradient-based noise injection can shift classification scores without visible perceptual loss to human inspectors.
 

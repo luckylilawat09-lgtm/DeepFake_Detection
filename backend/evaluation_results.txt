@@ -1,0 +1,53 @@
+================================================================================
+           DEEPFAKE DETECTOR EMPIRICAL EVALUATION RESULTS
+================================================================================
+Date & Time             : 2026-10-21 17:12:31
+Checkpoint Evaluated    : C:\Users\lucky\FCC\DeepFake Detection\backend\models\deepfake_detector.pth
+Checkpoint File         : deepfake_detector.pth
+Checkpoint Epoch        : 10
+Checkpoint Val Accuracy : 95.66% (Validation Split)
+Dataset Evaluated       : C:\Users\lucky\Downloads\archive\Data Set 1\Data Set 1\test
+Held-out Test Split Only: YES (Train and Validation splits excluded)
+Preprocessing           : Resize 224x224, ToTensor, Normalize ImageNet (mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]), No Augmentation
+Evaluation Device       : cpu
+Evaluation Duration     : 141.64 seconds
+
+--------------------------------------------------------------------------------
+OVERALL TEST METRICS
+--------------------------------------------------------------------------------
+Total Test Images       : 5227
+  - Ground Truth Fake   : 2623 images
+  - Ground Truth Real   : 2604 images
+Test Accuracy           : 78.59% (4108 / 5227)
+Test Loss (CE)          : 0.5822
+
+--------------------------------------------------------------------------------
+CLASSIFICATION REPORT & DETAILED METRICS
+--------------------------------------------------------------------------------
+Class             Precision    Recall       F1-Score     Support
+--------------------------------------------------------------------------------
+Fake (0)          0.7251       0.9234       0.8123       2623
+Real (1)          0.8935       0.6475       0.7508       2604
+--------------------------------------------------------------------------------
+Macro Avg         0.8093       0.7854       0.7816       5227
+Weighted Avg      0.8090       0.7859       0.7817       5227
+
+Positive Class 'Fake' Summary:
+  - Precision : 72.51% (when model predicts Fake, how often it is truly Fake)
+  - Recall    : 92.34% (fraction of true Fake images correctly detected)
+  - F1-Score  : 81.23% (harmonic mean of Precision and Recall)
+
+--------------------------------------------------------------------------------
+CONFUSION MATRIX
+--------------------------------------------------------------------------------
+                    Predicted Fake (0)    Predicted Real (1)    Total Actual
+Actual Fake (0)     2422                  201                   2623
+Actual Real (1)     918                   1686                  2604
+Total Predicted     3340                  1887                  5227
+
+Breakdown:
+  - True Positives  (TP) :  2422  [Actual Fake  -> Predicted Fake]
+  - False Negatives (FN) :   201  [Actual Fake  -> Predicted Real] (Missed Fakes)
+  - False Positives (FP) :   918  [Actual Real  -> Predicted Fake] (False Alarms)
+  - True Negatives  (TN) :  1686  [Actual Real  -> Predicted Real]
+================================================================================

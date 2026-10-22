@@ -1,0 +1,59 @@
+{
+  "evaluation_timestamp": "2026-10-21 17:12:31",
+  "checkpoint_evaluated": "C:\\Users\\lucky\\FCC\\DeepFake Detection\\backend\\models\\deepfake_detector.pth",
+  "checkpoint_filename": "deepfake_detector.pth",
+  "checkpoint_epoch": 10,
+  "checkpoint_val_acc_pct": 95.66,
+  "dataset_test_path": "C:\\Users\\lucky\\Downloads\\archive\\Data Set 1\\Data Set 1\\test",
+  "total_test_samples": 5227,
+  "total_fake_samples": 2623,
+  "total_real_samples": 2604,
+  "class_mapping": {
+    "0": "fake",
+    "1": "real"
+  },
+  "test_accuracy_pct": 78.59,
+  "test_loss": 0.5822,
+  "evaluation_duration_seconds": 141.64,
+  "confusion_matrix": {
+    "TP_fake": 2422,
+    "FN_fake": 201,
+    "FP_real": 918,
+    "TN_real": 1686,
+    "matrix_2x2": [
+      [
+        2422,
+        201
+      ],
+      [
+        918,
+        1686
+      ]
+    ],
+    "description": "Rows: Actual [Fake, Real]; Columns: Predicted [Fake, Real]"
+  },
+  "per_class_metrics": {
+    "fake": {
+      "support": 2623,
+      "precision": 0.7251,
+      "recall": 0.9234,
+      "f1_score": 0.8123
+    },
+    "real": {
+      "support": 2604,
+      "precision": 0.8935,
+      "recall": 0.6475,
+      "f1_score": 0.7508
+    }
+  },
+  "macro_averages": {
+    "precision": 0.8093,
+    "recall": 0.7854,
+    "f1_score": 0.7816
+  },
+  "weighted_averages": {
+    "precision": 0.809,
+    "recall": 0.7859,
+    "f1_score": 0.7817
+  }
+}

@@ -104,4 +104,4 @@ Before submitting a Pull Request, verify that all automated unit and integration
    ```
 4. Open a Pull Request using the [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md).
 
-Thank you for helping push forward the state of the art in synthetic media detection!
+Thank you for helping push forward practical tools and research in synthetic media detection!

@@ -25,6 +25,7 @@
 [Model & Training CLI](#-deep-learning-model--training-pipeline) •
 [API Specification](#-api-specification) •
 [Automated Tests](#-automated-testing--qa) •
+[Limitations](#-limitations--generalization-scope) •
 [Contributing](CONTRIBUTING.md) •
 [Project Report](PROJECT_REPORT.md)
 
@@ -36,9 +37,9 @@
 
 With the rise of generative adversarial networks (GANs)—specifically StyleGAN—detecting synthesized facial media is a key challenge for biometric security and digital content integrity.
 
-This repository implements a **baseline facial deepfake detection pipeline**:
+This repository implements an **experimental facial deepfake detection baseline**:
 1. **Core AI Engine:** A fine-tuned **EfficientNet-B0** binary classifier built in **PyTorch**, trained on real faces (FFHQ) versus GAN-synthesized human faces (StyleGAN) with progressive 2-stage fine-tuning and learning rate scheduling.
-2. **Visual Telemetry Frontend:** An interactive 3D viewport inspired by cutting-edge WebGL aesthetics ([motionsites.ai prompt](https://motionsites.ai/?prompt=design-world)), featuring custom GLSL chromatic refraction, dynamic laser scanning, and real-time neural pipeline HUD metrics.
+2. **Visual Telemetry Frontend:** An interactive 3D viewport inspired by modern WebGL aesthetics ([motionsites.ai prompt](https://motionsites.ai/?prompt=design-world)), featuring custom GLSL chromatic refraction, dynamic laser scanning, and real-time neural pipeline HUD metrics.
 3. **High-Throughput API:** A modular Flask REST server with ephemeral upload sanitation, active learning human feedback logging (`/feedback`), dynamic checkpoint reloading (`/reload-model`), and real-time training progress streaming.
 4. **Automated QA & CI:** Comprehensive PyTest test suite (20 passing tests) and GitHub Actions CI workflow covering Python 3.10 through 3.13.
 
@@ -133,15 +134,31 @@ The deep learning model is trained on the benchmark **140k Real and Fake Faces**
 2. **Stage 2 — Backbone Fine-Tuning (Epochs 3–10):** Convolutional backbone is unfrozen and trained at `fine_tune_lr = 1e-5` with classifier head maintaining `lr = 1e-3` and `weight_decay = 1e-4` to adapt feature extractors to subtle GAN textures.
 3. **Optimization & Scheduling:** Adam optimizer paired with `ReduceLROnPlateau(factor=0.5, patience=2)` and early stopping on validation accuracy (patience = 5).
 
-### Empirical Performance
-- **Peak Validation Accuracy:** **`95.66%`** (Epoch 10)
-- **Best Validation Loss:** **`0.1191`**
-- **Test Accuracy:** **`78.59%`** (across 5,227 unseen test portraits)
-- **Test Loss:** **`0.5822`**
-- **Precision (Fake):** **`72.51%`**
-- **Recall (Fake):** **`92.34%`**
-- **F1-Score:** **`81.23%`**
-- **Inference Latency:** **`33.96 ms`** $\pm$ `5.48 ms` per image (CPU, timed over 100 runs)
+### Empirical Performance & Evaluation Metrics
+
+The baseline model checkpoint (`backend/models/deepfake_detector.pth`) was evaluated on the strictly held-out test split (2,623 fake, 2,604 real portraits) with standard ImageNet normalization and no data augmentation. Full evaluation logs are saved in [evaluation_results.txt](evaluation_results.txt).
+
+| Metric | Score / Value | Evaluation Scope & Notes |
+| :--- | :---: | :--- |
+| **Validation Accuracy** | **`95.66%`** | Evaluated on 12,360 validation portraits at Epoch 10 (checkpoint selection metric) |
+| **Validation Loss** | **`0.1191`** | Cross-Entropy Loss on validation partition |
+| **Test Accuracy** | **`78.59%`** | Evaluated on **5,227** held-out test portraits (4,108 / 5,227 correct) |
+| **Test Loss** | **`0.5822`** | Cross-Entropy Loss on held-out test partition |
+| **Precision (Fake / Class 0)** | **`72.51%`** | Proportion of predicted fake portraits that are truly synthetic ($2,422 / 3,340$) |
+| **Recall (Fake / Class 0)** | **`92.34%`** | Proportion of actual synthetic portraits correctly flagged ($2,422 / 2,623$) |
+| **F1-Score (Fake / Class 0)** | **`81.23%`** | Harmonic mean of precision and recall on synthetic faces |
+| **Precision (Real / Class 1)** | **`89.35%`** | Proportion of predicted real portraits that are truly authentic ($1,686 / 1,887$) |
+| **Recall (Real / Class 1)** | **`64.75%`** | Proportion of actual authentic portraits correctly identified ($1,686 / 2,604$) |
+| **F1-Score (Real / Class 1)** | **`75.08%`** | Harmonic mean of precision and recall on authentic faces |
+| **Macro Average F1** | **`78.16%`** | Unweighted average across both classes |
+| **Inference Latency** | **`33.96 ms`** $\pm$ `5.48 ms` | Per-image latency on commodity CPU ($N = 100$ iterations) |
+
+#### Confusion Matrix ($N = 5,227$ Held-out Test Portraits):
+| Ground Truth \ Predicted | Predicted Fake (0) | Predicted Real (1) | Total Actual |
+| :--- | :---: | :---: | :---: |
+| **Actual Fake (StyleGAN)** | **2,422** (TP) | **201** (FN) | 2,623 |
+| **Actual Real (FFHQ)** | **918** (FP) | **1,686** (TN) | 2,604 |
+| **Total Predicted** | **3,340** | **1,887** | **5,227** |
 
 ### CLI Training Options
 The training engine (`backend/train.py`) exposes a robust command-line interface:
@@ -257,24 +274,27 @@ Open your browser to: **`http://localhost:8000`**
 ```json
 {
   "status": "completed",
-  "epoch": 3,
-  "total_epochs": 6,
+  "epoch": 10,
+  "total_epochs": 10,
   "batch": 2500,
   "total_batches": 2500,
-  "accuracy": 76.69,
-  "loss": 0.50,
+  "accuracy": 95.66,
+  "loss": 0.1191,
   "model_loaded": true,
   "model_ready": true,
   "phase": "Completed",
   "phase_idx": 4,
   "phases": [
-    { "id": 1, "title": "Data Ingestion & Augmentation", "status": "completed" },
-    { "id": 2, "title": "Classifier Head Convergence", "status": "completed" },
-    { "id": 3, "title": "Backbone Fine-Tuning", "status": "completed" },
-    { "id": 4, "title": "Model Validation & Checkpoint", "status": "completed" }
+    { "id": 1, "title": "Data Ingestion & Augmentation", "desc": "57,589 images indexed across train/val/test", "status": "completed" },
+    { "id": 2, "title": "Classifier Head Convergence", "desc": "Training dense classifier layers (Epochs 1-2)", "status": "completed" },
+    { "id": 3, "title": "Backbone Fine-Tuning", "desc": "Unfreezing EfficientNet-B0 backbone (Epochs 3+)", "status": "completed" },
+    { "id": 4, "title": "Model Validation & Checkpoint", "desc": "Benchmark on 12,360 validation images & export .pth", "status": "completed" }
   ]
 }
 ```
+
+> [!NOTE]
+> **Metric Distinction:** The `"accuracy"` field in `/training-status` telemetry reflects the **validation accuracy** achieved on the validation partition (95.66%) during training. Unbiased evaluation on the held-out test split yields a **test accuracy** of 78.59% (see [evaluation_results.txt](evaluation_results.txt)).
 
 ### 4. Human Feedback (Active Learning)
 `POST /feedback`
@@ -382,8 +402,23 @@ DeepFake_Detection/
 ├── CONTRIBUTING.md                     # Contributor guidelines & developer workflow
 ├── LICENSE                             # MIT Open-Source License
 ├── PROJECT_REPORT.md                   # Technical research & forensic analysis report
-└── README.md                           # Main documentation & developer portal
+├── README.md                           # Main documentation & developer portal
+├── evaluation_results.txt              # Complete empirical evaluation metrics output
+└── WALKTHROUGH.md                      # Feature walkthrough and setup guide
 ```
+
+---
+
+## ⚠️ Limitations & Generalization Scope
+
+> [!IMPORTANT]
+> **Dataset & Architecture Scope:**
+> The model was trained and evaluated strictly on facial portraits from the Kaggle 140k dataset (comparing NVIDIA **StyleGAN** synthesized faces against authentic **Flickr-Faces-HQ (FFHQ)** portraits).
+>
+> **Known Generalization Constraints:**
+> - **Other DeepFake & Generative Methods:** The model may not generalize reliably to other synthetic media synthesis pipelines, such as Latent Diffusion Models (Stable Diffusion, Midjourney, FLUX, Imagen), video-level face-swapping (e.g., DeepFaceLab, SimSwap, RoOP), or facial expression reenactment / neural puppet drivers.
+> - **Social Media Compression:** Heavy JPEG compression and resizing applied by social platforms act as high-frequency low-pass filters, dampening the subtle GAN convolution residuals that the classifier leverages.
+> - **Domain Shift:** Unseen lighting conditions, extreme facial poses, occlusions (glasses, masks), or non-portrait imagery outside the FFHQ domain may result in lower confidence or false positives.
 
 ---
 
