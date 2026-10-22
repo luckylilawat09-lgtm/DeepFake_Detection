@@ -72,3 +72,4 @@ backend/uploads/*
 *.bak
 *.swp
 *.log
+backend/models/archived_checkpoints/
